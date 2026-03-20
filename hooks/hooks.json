@@ -1,15 +1,3 @@
 {
-  "hooks": {
-    "Stop": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "${CLAUDE_PLUGIN_ROOT}/hooks/run-hook.cmd refine-stop",
-            "timeout": 60
-          }
-        ]
-      }
-    ]
-  }
+  "hooks": {}
 }
