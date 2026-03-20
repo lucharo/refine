@@ -1,0 +1,10 @@
+{
+  "name": "refine",
+  "version": "0.1.0",
+  "description": "Reflect on sessions and refine skills through use. Skills get better as you use them.",
+  "author": {
+    "name": "Luis Chaves"
+  },
+  "license": "MIT",
+  "keywords": ["skills", "reflection", "hooks", "self-improvement"]
+}

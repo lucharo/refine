@@ -1,0 +1,73 @@
+#!/bin/bash
+
+# Refine Stop Hook
+#
+# Fires when Claude stops responding. Checks if the session should trigger
+# a skill refinement pass before the user exits.
+#
+# Trigger: the user's last message contains "/refine" or the flag file exists.
+# Loop prevention: stop_hook_active=true means we already ran, let Claude stop.
+#
+# To auto-trigger every session, create the flag at session start:
+#   touch /tmp/.refine-trigger-$SESSION_ID
+
+# Prevent recursion if spawned as a judge
+if [ "$CLAUDE_HOOK_REFINE_MODE" = "true" ]; then
+    exit 0
+fi
+
+EVENT=$(cat)
+
+STOP_HOOK_ACTIVE=$(echo "$EVENT" | jq -r '.stop_hook_active // false')
+SESSION_ID=$(echo "$EVENT" | jq -r '.session_id // "unknown"')
+TRANSCRIPT_PATH=$(echo "$EVENT" | jq -r '.transcript_path // ""')
+
+# Loop prevention: if we already injected the refine prompt, let Claude stop
+if [ "$STOP_HOOK_ACTIVE" = "true" ]; then
+    exit 0
+fi
+
+# Check trigger conditions
+TRIGGERED=false
+
+# Trigger 1: flag file exists (set by SessionStart hook or manually)
+FLAG_FILE="/tmp/.refine-trigger-$(echo "$SESSION_ID" | tr '/' '_')"
+if [ -f "$FLAG_FILE" ]; then
+    rm -f "$FLAG_FILE"
+    TRIGGERED=true
+fi
+
+# Trigger 2: user's last message contains /refine
+# (Only check if not already triggered and transcript exists)
+if [ "$TRIGGERED" = "false" ] && [ -n "$TRANSCRIPT_PATH" ] && [ -f "$TRANSCRIPT_PATH" ]; then
+    # Get the last user message from the transcript
+    LAST_USER_MSG=$(tail -n 10 "$TRANSCRIPT_PATH" | jq -r 'select(.role == "user") | .content' 2>/dev/null | tail -1)
+    if echo "$LAST_USER_MSG" | grep -qi '/refine'; then
+        TRIGGERED=true
+    fi
+fi
+
+# If not triggered, let Claude stop normally
+if [ "$TRIGGERED" = "false" ]; then
+    exit 0
+fi
+
+# Inject the refine prompt into the session
+REFINE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")/.." && pwd)"
+
+jq -n --arg reason "Session refinement triggered. Review this session and refine skills.
+
+Look at what was done in this session. Check existing skills in ~/.claude/skills/ and managed skills in ${REFINE_DIR}/managed/. If any skill should be updated or a new one created based on patterns you observed:
+
+1. Edit or create the skill in ${REFINE_DIR}/managed/<name>/SKILL.md
+2. If new, symlink: ln -sf ${REFINE_DIR}/managed/<name> ~/.claude/skills/<name>
+3. Git commit in ${REFINE_DIR} with a message describing what was refined
+
+Constraints: max 2 skills touched, max 1 new skill, keep changes minimal. If nothing worth refining, just say so.
+
+Then stop." '{
+    "decision": "block",
+    "reason": $reason
+}'
+
+exit 0
