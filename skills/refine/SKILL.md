@@ -49,9 +49,11 @@ Check ownership before editing:
 - Regular file in `~/.claude/skills/` or `.claude/skills/`: yours to refine
 - Anything in `.agents/skills/`: read-only (managed by `npx skills`)
 
+**Also read the project's CLAUDE.md** (and `~/.claude/CLAUDE.md` if relevant). Check whether what happened in this session — tool preferences, conventions, corrections — is reflected there or should be.
+
 ## Step 3: Decide
 
-After reading the files (not before), ask three questions:
+After evaluating skills and CLAUDE.md, ask three questions:
 
 **Existing skills** — for each one you read:
 - Does the description match how it was actually used? If not, fix it.
