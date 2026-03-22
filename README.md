@@ -24,6 +24,16 @@ Refine is an agentic skill that does this for you. Call `/refine` at any point d
 
 ## Install
 
+### npx skills
+
+Works with Claude Code, Cursor, Cline, Codex, Windsurf, and [40+ other agents](https://github.com/vercel-labs/skills):
+
+```bash
+npx skills add lucharo/refine
+```
+
+### Claude Code plugin
+
 ```bash
 claude plugin marketplace add lucharo/refine
 claude plugin install refine@refine
