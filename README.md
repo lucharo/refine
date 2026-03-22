@@ -1,5 +1,9 @@
 # refine
 
+<p align="center">
+  <img src="assets/refine.png" alt="Skills get better through use — true for humans, true for agents" width="500">
+</p>
+
 A Claude Code plugin. Type `/refine` at the end of a session and it reviews what happened — which skills were used, what corrections you made, what patterns emerged. Then it creates or improves skills based on that.
 
 Skills get better as you use them. That's the whole idea.
