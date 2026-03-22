@@ -58,4 +58,4 @@ Refined skills are standard SKILL.md files. They work with:
 
 ## Limitations
 
-Plugin skills use a `plugin:skill` namespace. User skills can't use colons. So there's no clean way to create a personalized version of a plugin skill — the names would differ and the agent wouldn't know which to pick. This needs platform-level support for skill overrides.
+Plugin skills use a `plugin:skill` namespace. User skills can't use colons. So there's no clean way to personalize a plugin skill without changing its name, which means you'd end up with two similar skills and no clear winner. Until Claude Code supports user-level overrides within plugin namespaces, the workaround is to fork the plugin or contribute upstream.
