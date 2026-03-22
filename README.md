@@ -4,24 +4,17 @@
   <img src="assets/refine.png" alt="Skills get better through use — true for humans, true for agents" width="500">
 </p>
 
-A Claude Code plugin. Type `/refine` at the end of a session and it reviews what happened — which skills were used, what corrections you made, what patterns emerged. Then it creates or improves skills based on that.
+Skills aren't just for using particular CLIs or Python packages. They hold preferences, processes, workflows — the knowledge that you and your agents build up by doing the same things repeatedly. The more you use them, the more you notice what's missing or what could be sharper.
 
-Skills get better as you use them. That's the whole idea.
+Refine is an agentic skill that does this for you. Call `/refine` at any point during a session and your agent reflects on its own work — creating new skills, improving existing ones, or updating your CLAUDE.md when the conversation shows something should change.
 
 ## What it does
 
 1. Scans the session for skills that were invoked and how they performed
 2. Reads those skill files to see what could be improved
 3. Creates new skills for repeated workflows, or refines existing ones
-4. Can also append to CLAUDE.md when the pattern is a general preference rather than a specific workflow
-5. Commits changes with git
-
-## What it won't do
-
-- Touch plugin skills (`plugin:skill` format) — plugin updates would overwrite your changes
-- Touch skills installed via `npx skills add` — same reason
-- Force changes when nothing is worth changing
-- Create skills for one-off tasks
+4. Updates your CLAUDE.md when the pattern is a general preference rather than a specific workflow
+5. Commits changes with git — this gives you version history across your skills so you can see how they improve over time. Versioning is handled automatically.
 
 ## Where skills live
 
@@ -32,26 +25,11 @@ Skills get better as you use them. That's the whole idea.
 ## Install
 
 ```bash
-# Add as a local marketplace source
-# (assumes the repo is cloned/symlinked into ~/.claude/plugins/refine)
-claude plugin marketplace update local-plugins
-claude plugin install refine@local-plugins
-```
-
-Or from GitHub:
-
-```bash
 claude plugin marketplace add lucharo/refine
 claude plugin install refine@refine
 ```
 
-## Use
-
-```
-/refine
-```
-
-That's it. Run it as your last command before you leave a session.
+Run anytime throughout the conversation — this might often be towards the end, before you leave the session.
 
 ## Compatibility
 
@@ -62,4 +40,7 @@ Refined skills are standard SKILL.md files. They work with:
 
 ## Limitations
 
-Plugin skills use a `plugin:skill` namespace. User skills can't use colons. So there's no clean way to personalize a plugin skill without changing its name, which means you'd end up with two similar skills and no clear winner. Until Claude Code supports user-level overrides within plugin namespaces, the workaround is to fork the plugin or contribute upstream.
+- Won't touch plugin skills (`plugin:skill` format) or skills installed via `npx skills add` — updates from those sources would overwrite your changes
+- Won't force changes when nothing is worth changing
+- Won't create skills for one-off tasks
+- Plugin skills use a `plugin:skill` namespace and user skills can't use colons, so there's no clean way to personalize a plugin skill without changing its name. Until Claude Code supports user-level overrides within plugin namespaces, the workaround is to fork the plugin or contribute upstream.
