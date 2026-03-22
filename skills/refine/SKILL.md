@@ -1,6 +1,9 @@
 ---
 name: refine
-description: Reflect on the current session and refine skills based on patterns observed. Use at the end of a session to make skills better through use.
+description: >
+  Reflect on the current session and refine skills or CLAUDE.md based on patterns
+  observed. Use when the user says "refine", "what did we learn", or at the end of
+  a session to make skills better through use.
 allowed-tools:
   - Read
   - Write
@@ -8,96 +11,106 @@ allowed-tools:
   - Grep
   - Glob
   - Bash
+  - AskUserQuestion
 ---
 
 # Refine
 
-Review this session. Identify patterns worth capturing as new skills or improvements to existing skills.
+Review this session. Identify patterns worth capturing as new skills, improvements to existing skills, or additions to CLAUDE.md.
 
 ## Step 1: Scan the session
 
-Find which skills were used in this session by checking the conversation for `<command-name>` tags:
+Look through the conversation for `<command-name>` tags — these appear when skills are invoked. Note which skills were used and how they performed.
 
-```bash
-grep -o '<command-name>[^<]*</command-name>' "$TRANSCRIPT_PATH" | sed 's/<[^>]*>//g' | sort -u
-```
-
-If `$TRANSCRIPT_PATH` is not available, look at the conversation context directly — you have the full session in your context window already. Note which skills were invoked and how they performed.
+Also note:
+- Corrections the user made (these reveal preferences worth codifying)
+- Repeated workflows that could become skills
+- Hard-won knowledge (debugging, research) worth preserving
+- General behavioral preferences that belong in CLAUDE.md rather than a skill
 
 ## Step 2: Read those skills
 
-For each skill used in the session, read its SKILL.md:
-- Check `~/.claude/skills/` for user skills (these are yours to refine)
+For each skill used in the session, find and read its SKILL.md:
+- Check `~/.claude/skills/` for user skills — but first `ls -la` to check if they're symlinks. If a symlink points to `~/.refined/`, the source file is there. If it points to a plugin directory, it's read-only.
 - Check `~/.claude/plugins/` for plugin skills (read-only — see design note below)
 
 Also scan the session for patterns that no existing skill covers.
 
 ## Step 3: Decide
 
-For each user skill used:
+Ask yourself three questions:
+
+**Skills** — for each user skill used:
 - Did it work well as-is? → leave it alone
 - Did the user correct something, or did the skill miss something? → refine it
 
-For the session overall:
+**New skills** — for the session overall:
 - Was there a repeated workflow or hard-won knowledge worth codifying? → new skill
-- Was there a correction the user made that indicates a preference? → new skill or update existing
+- Was there a correction that indicates a process worth capturing? → new skill
+
+**CLAUDE.md** — for general preferences and behavioral instructions:
+- Did the user correct a general behavior (not tied to a specific workflow)? → CLAUDE.md
+- Is there a tool preference, communication style, or project convention worth persisting? → CLAUDE.md
+- Examples: "always use uv", "don't ask before committing", "use rip instead of rm"
 
 If nothing is worth changing, say so and stop. Don't force changes.
 
+**Constraints applied here**: max 2 skills touched per refine, max 1 new skill per refine.
+
 ## Step 4: Edit
 
-**Refining an existing skill**: edit it where it already lives. Don't move skills between scopes.
-- If it's in `~/.refined/` → edit in place
-- If it's in `~/.claude/skills/` → edit in place
-- If it's in `.claude/skills/` (project-level) → edit in place
+### Skills
 
-**Creating a new skill**: ask the user which scope before writing:
-- **User skill** — useful across all projects (e.g. "how I like commit messages", "my PR review style"). Write to `~/.refined/<name>/SKILL.md` in this repo and symlink to `~/.claude/skills/<name>`.
-- **Local/repo skill** — specific to the current project (e.g. "how to deploy this app", "this repo's test patterns"). Write directly to `.claude/skills/<name>/SKILL.md` in the project's repo.
+**Refining an existing skill**: first `ls -la` to check if it's a symlink.
+- Symlink to `~/.refined/` → edit the target file in `~/.refined/`
+- Symlink to a plugin directory → do NOT edit (read-only)
+- Regular file in `~/.claude/skills/` or `.claude/skills/` → edit in place
 
-Keep changes minimal and focused.
+**Creating a new skill**: ask the user which scope:
+- **User skill** — useful across all projects. Write to `~/.refined/<name>/SKILL.md` and symlink to `~/.claude/skills/<name>`.
+- **Local/repo skill** — specific to the current project. Write to `.claude/skills/<name>/SKILL.md` in the project's repo.
+
+### CLAUDE.md
+
+**Always ask before editing CLAUDE.md.** Show the proposed addition and ask the user to confirm.
+
+- Only append — never modify or remove existing entries
+- Keep additions concise (1-3 lines per entry)
+- Choose the right file:
+  - `~/.claude/CLAUDE.md` — global preferences (affect all projects)
+  - `.claude/CLAUDE.md` or `CLAUDE.md` in project root — project-specific
 
 ## Why refine doesn't touch plugin skills
 
-Plugin skills (invoked as `plugin:skill`) are namespaced and versioned by their
-plugin. Refine doesn't personalise them because:
+Plugin skills (invoked as `plugin:skill`) are namespaced and versioned by their plugin. Refine doesn't personalise them because:
 
 1. **Editing in place breaks on update** — the next plugin update overwrites your changes.
-2. **Copying creates ambiguity** — user skill names can't contain colons, so a copy of
-   `roborev:fix` would need a different name (e.g. `roborev-fix`). Now you have two
-   similar skills and the agent doesn't know which to pick.
+2. **Copying creates ambiguity** — user skill names can't contain colons, so a copy of `roborev:fix` would need a different name (e.g. `roborev-fix`). Now you have two similar skills and the agent doesn't know which to pick.
 
-This is a limitation worth solving. The ideal future: everyone starts from base plugin
-skills that get better for their personal use over time. That needs Claude Code to
-support user-level skill overrides within a plugin namespace — it doesn't today.
+This is a limitation worth solving. The ideal future: everyone starts from base plugin skills that get better for their personal use over time. That needs Claude Code to support user-level skill overrides within a plugin namespace — it doesn't today.
 
 For now, if a plugin skill needs improving: contribute upstream or fork the plugin.
 
 ## Step 5: Link, track, and commit
 
-For each new or modified skill, ask the user:
-- **Git track this skill?** (default: yes for user skills, no for local/repo skills since the repo already has its own git)
+For each new or modified skill, ask the user whether to git track it (default: yes for user skills, no for local/repo skills).
 
 **User skills** (written to `~/.refined/`):
 ```bash
-# Symlink into ~/.claude/skills/
-ln -sf ~/.refined/<name> ~/.claude/skills/<name>
+# Symlink into ~/.claude/skills/ (-n flag handles directory symlinks correctly)
+ln -sfn "$HOME/.refined/<name>" "$HOME/.claude/skills/<name>"
 
-# If git-tracked: commit in ~/.refined
-cd ~/.refined
-git add <name>/
-git commit -m "refine: <what changed and why>"
+# If git-tracked:
+git -C "$HOME/.refined" add <name>/ && git -C "$HOME/.refined" commit -m "refine: <what changed and why>"
 ```
 
 **Local/repo skills** (written to `.claude/skills/` in the project):
 ```bash
-# Already in the project repo — commit there if the user wants
-cd <project-root>
-git add .claude/skills/<name>/
-git commit -m "refine: <what changed and why>"
+# Commit in the project repo if the user wants
+git -C <project-root> add .claude/skills/<name>/ && git -C <project-root> commit -m "refine: <what changed and why>"
 ```
 
-**Existing skills** (edited in place): if the skill is already git-tracked, commit in whichever repo it belongs to.
+**Existing skills** (edited in place): commit in whichever repo the file belongs to.
 
 ## Skill file format
 
@@ -122,8 +135,10 @@ The body is the prompt Claude receives when the skill is invoked. Write it as di
 - A skill should be under 200 lines. Longer means it's doing too much.
 - Prefer refining an existing skill over creating a new one.
 - Never edit plugin skill files directly (they get overwritten on update).
+- Always check symlink targets before editing — don't follow symlinks into plugin dirs.
 - Don't create skills for one-off tasks that won't recur.
 - Don't capture things obvious from reading code or CLAUDE.md.
+- Always ask before editing CLAUDE.md. Only append, never modify existing entries.
 
 ## Output
 
