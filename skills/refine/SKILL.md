@@ -46,10 +46,14 @@ If nothing is worth changing, say so and stop. Don't force changes.
 
 ## Step 4: Edit
 
-Write all skills to `refined/<skill-name>/SKILL.md` in this repo.
+**Refining an existing skill**: edit it where it already lives. Don't move skills between scopes.
+- If it's in `refined/` → edit in place
+- If it's in `~/.claude/skills/` → edit in place
+- If it's in `.claude/skills/` (project-level) → edit in place
 
-- **Refining a skill you own** (already in `refined/`): edit it in place
-- **Creating a new skill**: write it to `refined/<name>/SKILL.md`
+**Creating a new skill**: ask the user which scope before writing:
+- **User skill** — useful across all projects (e.g. "how I like commit messages", "my PR review style"). Write to `refined/<name>/SKILL.md` in this repo and symlink to `~/.claude/skills/<name>`.
+- **Local/repo skill** — specific to the current project (e.g. "how to deploy this app", "this repo's test patterns"). Write directly to `.claude/skills/<name>/SKILL.md` in the project's repo.
 
 Keep changes minimal and focused.
 
@@ -69,16 +73,30 @@ support user-level skill overrides within a plugin namespace — it doesn't toda
 
 For now, if a plugin skill needs improving: contribute upstream or fork the plugin.
 
-## Step 5: Link and commit
+## Step 5: Link, track, and commit
 
+For each new or modified skill, ask the user:
+- **Git track this skill?** (default: yes for user skills, no for local/repo skills since the repo already has its own git)
+
+**User skills** (written to `refined/`):
 ```bash
-# Symlink new skills into ~/.claude/skills/
+# Symlink into ~/.claude/skills/
 ln -sf "$(pwd)/refined/<name>" ~/.claude/skills/<name>
 
-# Commit in this repo
+# If git-tracked: commit in this repo
 git add refined/
 git commit -m "refine: <what changed and why>"
 ```
+
+**Local/repo skills** (written to `.claude/skills/` in the project):
+```bash
+# Already in the project repo — commit there if the user wants
+cd <project-root>
+git add .claude/skills/<name>/
+git commit -m "refine: <what changed and why>"
+```
+
+**Existing skills** (edited in place): if the skill is already git-tracked, commit in whichever repo it belongs to.
 
 ## Skill file format
 
