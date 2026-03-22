@@ -36,10 +36,11 @@ For each skill used in the session, find and read its SKILL.md. Check these loca
 - `.agents/skills/` — universal skills (installed via `npx skills add`, cross-agent)
 - `~/.claude/plugins/` — plugin skills (read-only)
 
-For each, `ls -la` to check if it's a symlink:
+For each, `ls -la` to check if it's a symlink and where it lives:
 - Symlink → `~/.refined/`: yours to refine
-- Symlink → `.agents/skills/` or a plugin dir: read-only (updates would overwrite)
-- Regular file: yours to refine
+- Symlink → a plugin dir: read-only (updates would overwrite)
+- Regular file in `~/.claude/skills/` or `.claude/skills/`: yours to refine
+- Anything in `.agents/skills/`: read-only (managed by `npx skills`, updates would overwrite)
 
 Also scan the session for patterns that no existing skill covers.
 
