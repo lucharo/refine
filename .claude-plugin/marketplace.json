@@ -1,6 +1,6 @@
 {
   "name": "refine",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Reflect on sessions and refine skills through use",
   "owner": {
     "name": "Luis Chaves"
@@ -8,7 +8,7 @@
   "plugins": [
     {
       "name": "refine",
-      "version": "0.1.0",
+      "version": "0.2.0",
       "description": "Reflect on sessions and refine skills through use",
       "source": "./"
     }
