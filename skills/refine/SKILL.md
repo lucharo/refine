@@ -30,9 +30,16 @@ Also note:
 
 ## Step 2: Read those skills
 
-For each skill used in the session, find and read its SKILL.md:
-- Check `~/.claude/skills/` for user skills — but first `ls -la` to check if they're symlinks. If a symlink points to `~/.refined/`, the source file is there. If it points to a plugin directory, it's read-only.
-- Check `~/.claude/plugins/` for plugin skills (read-only — see design note below)
+For each skill used in the session, find and read its SKILL.md. Check these locations:
+- `~/.claude/skills/` — user skills
+- `.claude/skills/` — project-level skills
+- `.agents/skills/` — universal skills (installed via `npx skills add`, cross-agent)
+- `~/.claude/plugins/` — plugin skills (read-only)
+
+For each, `ls -la` to check if it's a symlink:
+- Symlink → `~/.refined/`: yours to refine
+- Symlink → `.agents/skills/` or a plugin dir: read-only (updates would overwrite)
+- Regular file: yours to refine
 
 Also scan the session for patterns that no existing skill covers.
 
@@ -63,7 +70,7 @@ If nothing is worth changing, say so and stop. Don't force changes.
 
 **Refining an existing skill**: first `ls -la` to check if it's a symlink.
 - Symlink to `~/.refined/` → edit the target file in `~/.refined/`
-- Symlink to a plugin directory → do NOT edit (read-only)
+- Symlink to a plugin dir or `.agents/skills/` → do NOT edit (read-only — managed externally)
 - Regular file in `~/.claude/skills/` or `.claude/skills/` → edit in place
 
 **Creating a new skill**: ask the user which scope:
@@ -80,16 +87,23 @@ If nothing is worth changing, say so and stop. Don't force changes.
   - `~/.claude/CLAUDE.md` — global preferences (affect all projects)
   - `.claude/CLAUDE.md` or `CLAUDE.md` in project root — project-specific
 
-## Why refine doesn't touch plugin skills
+## Why refine doesn't touch externally managed skills
 
-Plugin skills (invoked as `plugin:skill`) are namespaced and versioned by their plugin. Refine doesn't personalise them because:
+Two categories of skills are read-only:
 
-1. **Editing in place breaks on update** — the next plugin update overwrites your changes.
-2. **Copying creates ambiguity** — user skill names can't contain colons, so a copy of `roborev:fix` would need a different name (e.g. `roborev-fix`). Now you have two similar skills and the agent doesn't know which to pick.
+**Plugin skills** (invoked as `plugin:skill`) — namespaced and versioned by their plugin.
+- Editing in place breaks on update.
+- Copying creates ambiguity — user skill names can't contain colons, so a copy of `roborev:fix` would need a different name. Two similar skills, agent doesn't know which to pick.
 
-This is a limitation worth solving. The ideal future: everyone starts from base plugin skills that get better for their personal use over time. That needs Claude Code to support user-level skill overrides within a plugin namespace — it doesn't today.
+**Skills installed via `npx skills add`** — managed by the [vercel-labs/skills](https://github.com/vercel-labs/skills) CLI, typically symlinked from `.agents/skills/`.
+- `npx skills update` would overwrite your changes.
+- These are designed to be shared across agents (Claude, Cursor, Cline, etc.).
 
-For now, if a plugin skill needs improving: contribute upstream or fork the plugin.
+The ideal future: everyone starts from base skills that get better for their personal use over time. That needs skill override support at the platform level.
+
+For now, if an external skill needs improving: contribute upstream or fork.
+
+Note: `~/.refined/` is itself a valid source for `npx skills add ~/.refined` — so refined skills can be shared with other agents or users.
 
 ## Step 5: Link, track, and commit
 
@@ -99,6 +113,10 @@ For each new or modified skill, ask the user whether to git track it (default: y
 ```bash
 # Symlink into ~/.claude/skills/ (-n flag handles directory symlinks correctly)
 ln -sfn "$HOME/.refined/<name>" "$HOME/.claude/skills/<name>"
+
+# Optional: also link into .agents/skills/ for cross-agent compatibility (Cursor, Cline, etc.)
+# Only if the user uses npx skills / multi-agent setup
+# mkdir -p .agents/skills && ln -sfn "$HOME/.refined/<name>" .agents/skills/<name>
 
 # If git-tracked:
 git -C "$HOME/.refined" add <name>/ && git -C "$HOME/.refined" commit -m "refine: <what changed and why>"
@@ -134,8 +152,8 @@ The body is the prompt Claude receives when the skill is invoked. Write it as di
 - Max 2 skills touched per refine. Max 1 new skill per refine.
 - A skill should be under 200 lines. Longer means it's doing too much.
 - Prefer refining an existing skill over creating a new one.
-- Never edit plugin skill files directly (they get overwritten on update).
-- Always check symlink targets before editing — don't follow symlinks into plugin dirs.
+- Never edit externally managed skills (plugins, `npx skills` installs) — they get overwritten on update.
+- Always check symlink targets before editing — don't follow symlinks into plugin dirs or `.agents/skills/`.
 - Don't create skills for one-off tasks that won't recur.
 - Don't capture things obvious from reading code or CLAUDE.md.
 - Always ask before editing CLAUDE.md. Only append, never modify existing entries.
