@@ -18,52 +18,59 @@ allowed-tools:
 
 Review this session. Identify patterns worth capturing as new skills, improvements to existing skills, or additions to CLAUDE.md.
 
-## Step 1: Scan the session
+## Step 1: Scan the session (use tools, don't just think)
 
-Look through the conversation for `<command-name>` tags — these appear when skills are invoked. Note which skills were used and how they performed.
+Do NOT skip this step by reasoning about it. You MUST use tools:
 
-Also note:
-- Corrections the user made (these reveal preferences worth codifying)
-- Repeated workflows that could become skills
-- Hard-won knowledge (debugging, research) worth preserving
-- General behavioral preferences that belong in CLAUDE.md rather than a skill
+1. **List all skill locations** — run these commands:
+   ```bash
+   ls -la ~/.claude/skills/ 2>/dev/null
+   ls -la .claude/skills/ 2>/dev/null
+   ls -la ~/.refined/ 2>/dev/null
+   ```
 
-## Step 2: Read those skills
+2. **Identify skills used** — look through the conversation for `<command-name>` tags and any skill files that were read or created during the session.
 
-For each skill used in the session, find and read its SKILL.md. Check these locations:
-- `~/.claude/skills/` — user skills
-- `.claude/skills/` — project-level skills
-- `.agents/skills/` — universal skills (installed via `npx skills add`, cross-agent)
-- `~/.claude/plugins/` — plugin skills (read-only)
+3. **Note corrections** — what did the user correct, rephrase, or push back on? These are the most valuable signals.
 
-For each, `ls -la` to check if it's a symlink and where it lives:
+## Step 2: Read the actual skill files
+
+You MUST read at least 3 skill files before concluding "nothing to refine." Don't just think about them — open them with Read.
+
+For each relevant skill, read its SKILL.md and evaluate:
+- Is the description specific enough to trigger correctly?
+- Are the instructions clear and complete based on how the skill was actually used?
+- Did the session reveal gaps, edge cases, or missing steps?
+- Are references to other files/skills correct?
+
+Check where each skill lives:
 - Symlink → `~/.refined/`: yours to refine
 - Symlink → a plugin dir: read-only (updates would overwrite)
 - Regular file in `~/.claude/skills/` or `.claude/skills/`: yours to refine
-- Anything in `.agents/skills/`: read-only (managed by `npx skills`, updates would overwrite)
-
-Also scan the session for patterns that no existing skill covers.
+- Anything in `.agents/skills/`: read-only (managed by `npx skills`)
 
 ## Step 3: Decide
 
-Ask yourself three questions:
+After reading the files (not before), ask three questions:
 
-**Skills** — for each user skill used:
-- Did it work well as-is? → leave it alone
-- Did the user correct something, or did the skill miss something? → refine it
+**Existing skills** — for each one you read:
+- Does the description match how it was actually used? If not, fix it.
+- Did the session expose missing instructions, wrong assumptions, or incomplete steps?
+- Did the user correct something the skill should have known?
 
 **New skills** — for the session overall:
-- Was there a repeated workflow or hard-won knowledge worth codifying? → new skill
-- Was there a correction that indicates a process worth capturing? → new skill
+- Was there a repeated workflow that has no skill yet?
+- Was there hard-won knowledge (debugging, research) worth preserving?
+- Was there a correction that indicates a process worth capturing?
 
 **CLAUDE.md** — for general preferences and behavioral instructions:
-- Did the user correct a general behavior (not tied to a specific workflow)? → CLAUDE.md
-- Is there a tool preference, communication style, or project convention worth persisting? → CLAUDE.md
+- Did the user correct a general behavior (not tied to a specific workflow)?
+- Is there a tool preference, communication style, or project convention worth persisting?
 - Examples: "always use uv", "don't ask before committing", "use rip instead of rm"
 
-If nothing is worth changing, say so and stop. Don't force changes.
+"Nothing to refine" is a valid conclusion — but only after you've done the reading. The point of refine is thoroughness, not volume. Read the files, verify they're solid, and if they are, say so. Just don't skip the verification.
 
-**Constraints applied here**: max 2 skills touched per refine, max 1 new skill per refine.
+**Constraints**: max 2 skills touched per refine, max 1 new skill per refine.
 
 ## Step 4: Edit
 
