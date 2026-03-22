@@ -1,0 +1,26 @@
+# Changelog
+
+## 0.3.0
+
+- Require genuine evaluation before concluding "nothing to refine" — agents were skipping straight to that conclusion without engaging
+- Smart about when to use tools vs context: skills created in the same session don't need re-reading, skills only used do
+- Fix broken symlink from npx skills test install
+
+## 0.2.0
+
+- Move refined skills to `~/.refined/` as a separate git repo
+- Add CLAUDE.md as a refine target (append-only, ask before editing)
+- Support vercel-labs/skills pattern (`.agents/skills/` as read-only)
+- Add `AskUserQuestion` to allowed tools
+- Fix symlinks: use `ln -sfn` with `$HOME`, check targets before editing
+- Add `npx skills add` as primary install method
+- Plugin skill personalisation documented as a known limitation
+- Distinguish user vs local/repo skill scope (ask on creation)
+- Git tracking per skill (default yes for user, no for local)
+
+## 0.1.0
+
+- Initial release
+- `/refine` skill: scan session, read skills, create/refine, commit
+- Stop hook (disabled by default)
+- Plugin structure with marketplace.json for distribution
