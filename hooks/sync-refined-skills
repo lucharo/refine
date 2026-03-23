@@ -1,0 +1,20 @@
+#!/bin/bash
+
+# Sync refined skills: create symlinks in ~/.claude/skills/ for any
+# skill in ~/.refined/ that doesn't already have one.
+# Runs on SessionStart — fast and idempotent.
+
+REFINED_DIR="$HOME/.refined"
+SKILLS_DIR="$HOME/.claude/skills"
+
+[ -d "$REFINED_DIR" ] || exit 0
+mkdir -p "$SKILLS_DIR"
+
+for skill in "$REFINED_DIR"/*/; do
+    [ -d "$skill" ] || continue
+    name=$(basename "$skill")
+    target="$SKILLS_DIR/$name"
+    [ -e "$target" ] || ln -sfn "$skill" "$target"
+done
+
+exit 0
