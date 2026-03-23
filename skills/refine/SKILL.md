@@ -120,9 +120,15 @@ Note: `~/.refined/` is itself a valid source for `npx skills add ~/.refined` —
 For each new or modified skill, ask the user whether to git track it (default: yes for user skills, no for local/repo skills).
 
 **User skills** (written to `~/.refined/`):
-
-Symlinks are handled automatically — a SessionStart hook syncs `~/.refined/` into `~/.claude/skills/` every session. Just write the file and commit:
 ```bash
+# Symlink into ~/.claude/skills/ (-n flag handles directory symlinks correctly)
+ln -sfn "$HOME/.refined/<name>" "$HOME/.claude/skills/<name>"
+
+# Optional: also link into .agents/skills/ for cross-agent compatibility (Cursor, Cline, etc.)
+# Only if the user uses npx skills / multi-agent setup
+# mkdir -p .agents/skills && ln -sfn "$HOME/.refined/<name>" .agents/skills/<name>
+
+# If git-tracked:
 git -C "$HOME/.refined" add <name>/ && git -C "$HOME/.refined" commit -m "refine: <what changed and why>"
 ```
 
