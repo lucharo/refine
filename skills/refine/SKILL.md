@@ -60,17 +60,17 @@ After evaluating skills and CLAUDE.md, ask three questions:
 - Did the session expose missing instructions, wrong assumptions, or incomplete steps?
 - Did the user correct something the skill should have known?
 
-**New skills** — for the session overall:
-- Was there a repeated workflow that has no skill yet?
+**New skills** — be proactive. If you identify a workflow worth capturing, create it. Don't just mention it as a possibility and move on.
+- Was there a workflow that could bring value in future sessions? Create the skill. You don't need to see it repeated twice — once is enough if it's clearly reusable.
 - Was there hard-won knowledge (debugging, research) worth preserving?
-- Was there a correction that indicates a process worth capturing?
+- Was there a multi-step process the agent performed that could be codified?
 
 **CLAUDE.md** — for general preferences and behavioral instructions:
 - Did the user correct a general behavior (not tied to a specific workflow)?
 - Is there a tool preference, communication style, or project convention worth persisting?
 - Examples: "always use uv", "don't ask before committing", "use rip instead of rm"
 
-"Nothing to refine" is a valid conclusion — but only after genuine evaluation. The point is thoroughness, not volume. If skills are solid, say so. Just don't skip the thinking.
+Your default stance should be to create or improve something. Most sessions contain at least one workflow, preference, or piece of knowledge worth capturing. "Nothing to refine" is valid but should be rare — it means you genuinely found no reusable workflow, no skill to improve, and no CLAUDE.md update needed.
 
 **Constraints**: max 2 skills touched per refine, max 1 new skill per refine.
 
@@ -164,7 +164,7 @@ The body is the prompt Claude receives when the skill is invoked. Write it as di
 - Prefer refining an existing skill over creating a new one.
 - Never edit externally managed skills (plugins, `npx skills` installs) — they get overwritten on update.
 - Always check symlink targets before editing — don't follow symlinks into plugin dirs or `.agents/skills/`.
-- Don't create skills for one-off tasks that won't recur.
+- Don't create skills for truly one-off tasks (e.g. "fix this specific bug"). But if a workflow could plausibly be useful again, create the skill — don't wait for proof of recurrence.
 - Don't capture things obvious from reading code or CLAUDE.md.
 - Always ask before editing CLAUDE.md. Only append, never modify existing entries.
 
