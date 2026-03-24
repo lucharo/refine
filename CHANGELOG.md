@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.1
+
+- Proactive skill creation: if a workflow could bring value, create the skill — don't wait for proof of recurrence
+- Proactively read CLAUDE.md as part of standard evaluation, don't wait to be asked
+
 ## 0.3.0
 
 - Require genuine evaluation before concluding "nothing to refine" — agents were skipping straight to that conclusion without engaging
