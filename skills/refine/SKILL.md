@@ -180,7 +180,7 @@ If something looks like a fact to remember rather than a rule to follow or a wor
 - Always check symlink targets before editing — don't follow symlinks into plugin dirs or `.agents/skills/`.
 - Don't create skills for truly one-off tasks (e.g. "fix this specific bug"). But if a workflow could plausibly be useful again, create the skill — don't wait for proof of recurrence.
 - Don't capture things obvious from reading code or CLAUDE.md.
-- Always ask before editing CLAUDE.md. Only append, never modify existing entries.
+- Always ask before editing CLAUDE.md. Append by default; updates to stale entries are OK with user confirmation.
 
 ## Output
 
