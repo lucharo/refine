@@ -162,8 +162,6 @@ allowed-tools:
 
 The body is the prompt Claude receives when the skill is invoked. Write it as direct instructions.
 
-**Common allowed-tools to consider**: If the skill involves multi-step work, include `TaskCreate` and `TaskUpdate` — users expect visible progress tracking. If it asks questions, include `AskUserQuestion`. Only list tools the skill actually needs.
-
 ## Memory files are out of scope
 
 Some users have auto-memory systems (persistent file-based memory). Refine does NOT touch memory files. The persistence hierarchy is:

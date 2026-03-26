@@ -6,7 +6,6 @@
 - Clear user vs repo CLAUDE.md guidance: user = how I work, repo = how this codebase works
 - CLAUDE.md updates allowed (not just appends) when existing entries are stale — still ask first
 - Memory files explicitly out of scope — refine handles skills and CLAUDE.md, not memory
-- Remind to include TaskCreate/TaskUpdate in allowed-tools for multi-step skills
 
 ## 0.3.1
 
