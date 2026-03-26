@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.4.0
+
+- Prefer skills over CLAUDE.md for multi-step workflows — CLAUDE.md is for rules, skills are for procedures
+- Clear user vs repo CLAUDE.md guidance: user = how I work, repo = how this codebase works
+- CLAUDE.md updates allowed (not just appends) when existing entries are stale — still ask first
+- Memory files explicitly out of scope — refine handles skills and CLAUDE.md, not memory
+- Remind to include TaskCreate/TaskUpdate in allowed-tools for multi-step skills
+
 ## 0.3.1
 
 - Proactive skill creation: if a workflow could bring value, create the skill — don't wait for proof of recurrence

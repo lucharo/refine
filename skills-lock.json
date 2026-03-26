@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "skills": {
+    "refine": {
+      "source": "lucharo/refine",
+      "sourceType": "github",
+      "computedHash": "13a0be50235014f676f9e2ed1cc9d6d925739b7863144e1d71c8a65a53dec925"
+    }
+  }
+}

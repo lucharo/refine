@@ -65,10 +65,17 @@ After evaluating skills and CLAUDE.md, ask three questions:
 - Was there hard-won knowledge (debugging, research) worth preserving?
 - Was there a multi-step process the agent performed that could be codified?
 
-**CLAUDE.md** — for general preferences and behavioral instructions:
+**CLAUDE.md** — for behavioral instructions, not workflows:
 - Did the user correct a general behavior (not tied to a specific workflow)?
 - Is there a tool preference, communication style, or project convention worth persisting?
 - Examples: "always use uv", "don't ask before committing", "use rip instead of rm"
+- **Prefer skills over CLAUDE.md** for anything that's a multi-step workflow. CLAUDE.md is for preferences and rules; skills are for procedures.
+
+Choose the right file:
+- **User CLAUDE.md** (`~/.claude/CLAUDE.md`): who the user is and how they work across all projects — tool preferences, communication style, secret handling, memory conventions
+- **Repo CLAUDE.md** (`CLAUDE.md` or `.claude/CLAUDE.md`): how this specific codebase works — stack, commands, validation, deploy, commit conventions
+
+If it would be useful in a different repo, it belongs in user CLAUDE.md. If it only makes sense for this project, it belongs in repo CLAUDE.md.
 
 Your default stance should be to create or improve something. Most sessions contain at least one workflow, preference, or piece of knowledge worth capturing. "Nothing to refine" is valid but should be rare — it means you genuinely found no reusable workflow, no skill to improve, and no CLAUDE.md update needed.
 
@@ -89,13 +96,11 @@ Your default stance should be to create or improve something. Most sessions cont
 
 ### CLAUDE.md
 
-**Always ask before editing CLAUDE.md.** Show the proposed addition and ask the user to confirm.
+**Always ask before editing CLAUDE.md.** Show the proposed change and ask the user to confirm.
 
-- Only append — never modify or remove existing entries
+- Append by default. Updating existing entries is acceptable when they're stale or wrong — but always ask first.
 - Keep additions concise (1-3 lines per entry)
-- Choose the right file:
-  - `~/.claude/CLAUDE.md` — global preferences (affect all projects)
-  - `.claude/CLAUDE.md` or `CLAUDE.md` in project root — project-specific
+- File choice is covered in Step 3 above (user vs repo CLAUDE.md)
 
 ## Why refine doesn't touch externally managed skills
 
@@ -156,6 +161,17 @@ allowed-tools:
 ```
 
 The body is the prompt Claude receives when the skill is invoked. Write it as direct instructions.
+
+**Common allowed-tools to consider**: If the skill involves multi-step work, include `TaskCreate` and `TaskUpdate` — users expect visible progress tracking. If it asks questions, include `AskUserQuestion`. Only list tools the skill actually needs.
+
+## Memory files are out of scope
+
+Some users have auto-memory systems (persistent file-based memory). Refine does NOT touch memory files. The persistence hierarchy is:
+- **Skills** → reusable workflows and procedures
+- **CLAUDE.md** → behavioral rules and project conventions
+- **Memory files** → contextual facts, user profile, project state (managed by the memory system, not refine)
+
+If something looks like a fact to remember rather than a rule to follow or a workflow to codify, it's not refine's job.
 
 ## Constraints
 
