@@ -94,6 +94,14 @@ Your default stance should be to create or improve something. Most sessions cont
 - **User skill** — useful across all projects. Write to `~/.refined/<name>/SKILL.md` and symlink to `~/.claude/skills/<name>`.
 - **Local/repo skill** — specific to the current project. Write to `.claude/skills/<name>/SKILL.md` in the project's repo.
 
+Before committing the name, check for clashes:
+```bash
+# Ensure no plugin or external skill already uses this name
+grep -q '"<name>' ~/.claude/plugins/installed_plugins.json 2>/dev/null && echo 'CLASH: plugin exists'
+ls ~/.agents/skills/<name> 2>/dev/null && echo 'CLASH: npx skill exists'
+```
+If a clash is found, pick a more specific name (e.g. `personal-<name>`).
+
 ### CLAUDE.md
 
 **Always ask before editing CLAUDE.md.** Show the proposed change and ask the user to confirm.
