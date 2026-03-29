@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.1
+
+- Add rejection filter: distinguish project facts ("we use X") from behavioral rules ("always do Y"). Facts belong in docs/memory, only rules go in CLAUDE.md. Includes a litmus test: "what to DO" = rule, "what IS" = fact.
+
 ## 0.4.0
 
 - Prefer skills over CLAUDE.md for multi-step workflows — CLAUDE.md is for rules, skills are for procedures

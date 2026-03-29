@@ -71,6 +71,13 @@ After evaluating skills and CLAUDE.md, ask three questions:
 - Examples: "always use uv", "don't ask before committing", "use rip instead of rm"
 - **Prefer skills over CLAUDE.md** for anything that's a multi-step workflow. CLAUDE.md is for preferences and rules; skills are for procedures.
 
+**What does NOT go in CLAUDE.md or skills:**
+- Project-specific facts or implementation decisions ("we use h-dvh not h-screen", "auth uses Better Auth") — these are documentation or memory, not rules.
+- Change-log entries ("fixed X by switching to Y") — git history covers this.
+- Generic engineering advice ("investigate root causes") — too obvious to be a useful rule.
+
+The test: if it tells you WHAT to do in a situation, it's a rule (CLAUDE.md). If it tells you what IS, it's a fact (docs/memory). Only rules go in CLAUDE.md.
+
 Choose the right file:
 - **User CLAUDE.md** (`~/.claude/CLAUDE.md`): who the user is and how they work across all projects — tool preferences, communication style, secret handling, memory conventions
 - **Repo CLAUDE.md** (`CLAUDE.md` or `.claude/CLAUDE.md`): how this specific codebase works — stack, commands, validation, deploy, commit conventions
