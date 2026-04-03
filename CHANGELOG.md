@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.5.0
+
+- **Refine gate**: Stop hook blocks Claude from ending a session unless `/refine` was run — modeled on the Codex review gate pattern
+- `/refine:setup` command to enable/disable the gate per project (`--enable-gate` / `--disable-gate`)
+- PostToolUse tracker detects `/refine` invocation and writes a session marker
+- Removed old unused `refine-stop` hook (superseded by `stop-gate`)
+
 ## 0.4.1
 
 - Add rejection filter: distinguish project facts ("we use X") from behavioral rules ("always do Y"). Facts belong in docs/memory, only rules go in CLAUDE.md. Includes a litmus test: "what to DO" = rule, "what IS" = fact.
