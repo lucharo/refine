@@ -1,0 +1,70 @@
+#!/bin/bash
+
+# Refine Gate Setup — enable/disable the refine gate per project.
+#
+# Usage:
+#   hooks/setup --json                  # print status
+#   hooks/setup --json --enable-gate    # enable and print status
+#   hooks/setup --json --disable-gate   # disable and print status
+
+CONFIG_FILE="${CLAUDE_PLUGIN_DATA}/config.json"
+
+ensure_config() {
+  if [ -z "$CLAUDE_PLUGIN_DATA" ]; then
+    echo '{"error": "CLAUDE_PLUGIN_DATA not set — run from a Claude Code hook or set it manually"}' >&2
+    exit 1
+  fi
+  mkdir -p "$CLAUDE_PLUGIN_DATA"
+  if [ ! -f "$CONFIG_FILE" ]; then
+    echo '{"refineGate": false}' > "$CONFIG_FILE"
+  fi
+}
+
+read_gate() {
+  jq -r '.refineGate // false' "$CONFIG_FILE" 2>/dev/null
+}
+
+set_gate() {
+  local val="$1"
+  local tmp="${CONFIG_FILE}.tmp"
+  jq --argjson v "$val" '.refineGate = $v' "$CONFIG_FILE" > "$tmp" && mv "$tmp" "$CONFIG_FILE"
+}
+
+# Parse args
+JSON=false
+ACTION=""
+for arg in "$@"; do
+  case "$arg" in
+    --json)         JSON=true ;;
+    --enable-gate)  ACTION="enable" ;;
+    --disable-gate) ACTION="disable" ;;
+    *)              echo "Unknown argument: $arg" >&2; exit 1 ;;
+  esac
+done
+
+ensure_config
+
+# Apply action
+ACTIONS_TAKEN="[]"
+if [ "$ACTION" = "enable" ]; then
+  set_gate true
+  ACTIONS_TAKEN=$(jq -n --arg dir "$CLAUDE_PLUGIN_DATA" '["Enabled the refine gate for " + $dir + "."]')
+elif [ "$ACTION" = "disable" ]; then
+  set_gate false
+  ACTIONS_TAKEN=$(jq -n --arg dir "$CLAUDE_PLUGIN_DATA" '["Disabled the refine gate for " + $dir + "."]')
+fi
+
+GATE_ENABLED=$(read_gate)
+
+if [ "$JSON" = "true" ]; then
+  jq -n \
+    --argjson gateEnabled "$GATE_ENABLED" \
+    --argjson actionsTaken "$ACTIONS_TAKEN" \
+    '{
+      "ready": true,
+      "refineGateEnabled": $gateEnabled,
+      "actionsTaken": $actionsTaken
+    }'
+else
+  echo "Refine gate: $GATE_ENABLED"
+fi

@@ -1,0 +1,40 @@
+#!/bin/bash
+
+# Stop Gate — blocks Claude from stopping unless /refine was run this session.
+#
+# Modeled on the Codex review gate. Enable per-project with:
+#   hooks/setup --enable-gate
+
+EVENT=$(cat)
+
+STOP_HOOK_ACTIVE=$(echo "$EVENT" | jq -r '.stop_hook_active // false')
+SESSION_ID=$(echo "$EVENT" | jq -r '.session_id // "unknown"')
+SAFE_ID=$(echo "$SESSION_ID" | tr '/' '_')
+
+# Prevent infinite loop — if we already blocked once and Claude is retrying, let it go
+if [ "$STOP_HOOK_ACTIVE" = "true" ]; then
+  exit 0
+fi
+
+# Check if the gate is enabled for this project
+CONFIG_FILE="${CLAUDE_PLUGIN_DATA}/config.json"
+if [ ! -f "$CONFIG_FILE" ]; then
+  exit 0
+fi
+
+GATE_ENABLED=$(jq -r '.refineGate // false' "$CONFIG_FILE" 2>/dev/null)
+if [ "$GATE_ENABLED" != "true" ]; then
+  exit 0
+fi
+
+# Check if refine was already run this session
+MARKER="${CLAUDE_PLUGIN_DATA}/sessions/${SAFE_ID}.refined"
+if [ -f "$MARKER" ]; then
+  exit 0
+fi
+
+# Block — refine hasn't been run yet
+jq -n --arg reason "Run /refine before ending the session." \
+  '{"decision": "block", "reason": $reason}'
+
+exit 0

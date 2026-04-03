@@ -1,0 +1,24 @@
+#!/bin/bash
+
+# Track Refine — PostToolUse hook (matcher: Skill)
+#
+# Detects when /refine is invoked and writes a session marker so the
+# stop-gate knows refine has already run.
+
+EVENT=$(cat)
+
+SKILL=$(echo "$EVENT" | jq -r '.tool_input.skill // ""')
+
+# Only track the refine skill itself
+if [ "$SKILL" != "refine" ]; then
+  exit 0
+fi
+
+SESSION_ID=$(echo "$EVENT" | jq -r '.session_id // "unknown"')
+SAFE_ID=$(echo "$SESSION_ID" | tr '/' '_')
+
+SESSIONS_DIR="${CLAUDE_PLUGIN_DATA}/sessions"
+mkdir -p "$SESSIONS_DIR"
+touch "${SESSIONS_DIR}/${SAFE_ID}.refined"
+
+exit 0
