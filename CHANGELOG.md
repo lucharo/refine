@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.5.1
+
+- Add Codex-aware discovery guidance: inspect `~/.agents/skills` and repo `.agents/skills`, not
+  just Claude-style skill folders
+- Fix stale ownership guidance: `~/.agents/skills` is a discovery surface, not automatically a
+  read-only managed install
+- User skills now link into both `~/.claude/skills` and `~/.agents/skills` by default
+
 ## 0.5.0
 
 - **Refine gate**: Stop hook blocks Claude from ending a session unless `/refine` was run — modeled on the Codex review gate pattern
