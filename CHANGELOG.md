@@ -3,6 +3,7 @@
 ## 0.5.2
 
 - Document pointing `~/.refined` elsewhere — back it with your own repo (clone when fresh, or add a remote + push if it already exists) or symlink it to a visible location like `~/skills` (moving any existing dir first). No config — refine always writes to `~/.refined`, and the remote/location follow from what's there.
+- Fix fact/rule filter overshoot: v0.4.1's rejection filter was too eager — agents dropped corrections that contained both a fact and a rule into memory as fact-only, then output "nothing to refine". Guidance now reminds agents to extract BOTH when a correction is dual-natured, and flags "nothing to refine after a visible correction" as a common failure mode.
 
 ## 0.5.1
 

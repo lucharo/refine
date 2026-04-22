@@ -47,6 +47,11 @@ Check ownership before editing:
 - Entry in `~/.agents/skills/`: inspect the target first. Treat it as a discovery surface, not
   the source of truth. If it points to `~/.refined/`, edit the target in `~/.refined/`. If it
   points into a plugin cache or managed install, do not edit it.
+- If an off-the-shelf or shared skill needs personal refinement, prefer forking it into
+  `~/.refined/<name>` and repointing the user discovery link there, even when the current
+  discovery-surface copy looks editable. The goal is to keep personal refinements in one place and
+  disable the base copy at the user discovery surface rather than carrying divergent edits in a
+  bundled install.
 **Also read the project's CLAUDE.md** (and `~/.claude/CLAUDE.md` if relevant). Check whether what happened in this session — tool preferences, conventions, corrections — is reflected there or should be.
 ## Step 3: Decide
 After evaluating skills and CLAUDE.md, ask three questions:
@@ -63,11 +68,14 @@ After evaluating skills and CLAUDE.md, ask three questions:
 - Is there a tool preference, communication style, or project convention worth persisting?
 - Examples: "always use uv", "don't ask before committing", "use rip instead of rm"
 - **Prefer skills over CLAUDE.md** for anything that's a multi-step workflow. CLAUDE.md is for preferences and rules; skills are for procedures.
+- If the user corrected agent behavior in this session, do not stop at a vague recommendation. Draft the exact 1-3 line CLAUDE.md addition or update you would make, and present that concrete snippet when asking for confirmation.
+- If the correction is about repo-state handling (for example, "pull latest" in a dirty repo), separate the general rule from the one-off repo facts: capture the behavior rule in CLAUDE.md, not the repo's specific state.
+- A single correction often contains BOTH a fact and a rule. Capture the fact where facts go (docs/memory), AND extract the behavioral rule for CLAUDE.md. Example: "X and Y are completely different things" is a fact about X/Y plus a rule: "don't conflate unrelated concepts without evidence". Dropping one of the two is a failure mode.
 **What does NOT go in CLAUDE.md or skills:**
 - Project-specific facts or implementation decisions ("we use h-dvh not h-screen", "auth uses Better Auth") — these are documentation or memory, not rules.
 - Change-log entries ("fixed X by switching to Y") — git history covers this.
 - Generic engineering advice ("investigate root causes") — too obvious to be a useful rule.
-The test: if it tells you WHAT to do in a situation, it's a rule (CLAUDE.md). If it tells you what IS, it's a fact (docs/memory). Only rules go in CLAUDE.md.
+The test: if it tells you WHAT to do in a situation, it's a rule (CLAUDE.md). If it tells you what IS, it's a fact (docs/memory). A single correction can contain BOTH — extract both. Routing only the fact to memory and declaring "nothing to refine" is a common failure when the user corrected visible behavior this session.
 Choose the right file:
 - **User CLAUDE.md** (`~/.claude/CLAUDE.md`): who the user is and how they work across all projects — tool preferences, communication style, secret handling, memory conventions
 - **Repo CLAUDE.md** (`CLAUDE.md` or `.claude/CLAUDE.md`): how this specific codebase works — stack, commands, validation, deploy, commit conventions
@@ -82,6 +90,9 @@ Your default stance should be to create or improve something. Most sessions cont
 - Regular file in `~/.claude/skills/`, `.claude/skills/`, or repo `.agents/skills/` → edit in place
 - Entry in `~/.agents/skills/` → inspect the target first; if it points to `~/.refined/`, edit
   `~/.refined/`, not the discovery link
+- If the skill is effectively off-the-shelf but you want a personal variant, copy the whole skill
+  into `~/.refined/<name>/`, then replace the user discovery entry with a symlink to that refined
+  copy. Keep a reversible backup of the previous discovery-surface directory when practical.
 **Creating a new skill**: ask the user which scope:
 - **User skill** — useful across all projects. Write to `~/.refined/<name>/SKILL.md`, then symlink it
   into each discovery surface the user actually uses (`~/.claude/skills/<name>` for Claude-style
@@ -101,6 +112,7 @@ If a clash is found, pick a more specific name (e.g. `personal-<name>`).
 - Append by default. Updating existing entries is acceptable when they're stale or wrong — but always ask first.
 - Keep additions concise (1-3 lines per entry)
 - File choice is covered in Step 3 above (user vs repo CLAUDE.md)
+- When asking, include the exact text to add and a one-sentence reason it belongs in CLAUDE.md rather than a skill.
 ## Why refine doesn't touch externally managed skills
 Two categories of skills are read-only:
 **Plugin skills** (invoked as `plugin:skill`) — namespaced and versioned by their plugin.
@@ -122,6 +134,12 @@ ln -sfn "$HOME/.refined/<name>" "$HOME/.claude/skills/<name>"
 # Codex/shared user-level discovery
 mkdir -p "$HOME/.agents/skills"
 ln -sfn "$HOME/.refined/<name>" "$HOME/.agents/skills/<name>"
+
+# If replacing an existing off-the-shelf user skill, move the old discovery-surface directory
+# aside first so the refined copy disables the base one cleanly.
+# Example:
+# mv "$HOME/.agents/skills/<name>" "$HOME/.agents/skills/<name>.base-YYYY-MM-DD"
+# ln -s "$HOME/.refined/<name>" "$HOME/.agents/skills/<name>"
 
 # Optional: if the user also wants repo-local/shared discovery, add a repo `.agents/skills`
 # entry separately. Don't confuse that with the user-level `~/.agents/skills` link above.
