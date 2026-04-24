@@ -3,7 +3,13 @@ name: refine
 description: >
   Reflect on the current session and refine skills or CLAUDE.md based on patterns
   observed. Use when the user says "refine", "what did we learn", or at the end of
-  a session to make skills better through use.
+  a session to make skills better through use. ALSO invoke whenever the user asks
+  to "create a skill", "add a skill", "write a new skill", "make a skill", or
+  describes new-skill functionality — refine owns the placement decision so new
+  skills land in `~/.refined/<name>/` (cross-harness, git-tracked) by default,
+  not directly in `~/.claude/skills/<name>/` which is Claude-only and untracked.
+  Compose with plugin `skill-development` for structural conventions when helpful,
+  but always wrap the placement step yourself.
 allowed-tools:
   - Read
   - Write
@@ -15,6 +21,12 @@ allowed-tools:
 ---
 # Refine
 Review this session. Identify patterns worth capturing as new skills, improvements to existing skills, or additions to CLAUDE.md.
+
+## Two entry modes
+
+- **Refine mode** (user says "refine", "what did we learn", session-end): follow Steps 1–5 below as a session review.
+- **Create-skill mode** (user says "create a skill", "add a skill", "write a new skill", or describes new-skill functionality): skip Steps 1–3 and jump straight to **Step 4 → Creating a new skill**, then **Step 5** to link and commit. Refine owns the placement decision in this mode — write to `~/.refined/<name>/SKILL.md` so the skill is git-tracked and discoverable across every harness, not directly into a single agent's skill dir. Plugin `skill-development` skills are useful for structural conventions, but the routing decision stays with refine.
+
 ## Step 1: Scan the session
 Identify what happened:
 1. Which skills were invoked (look for `<command-name>` tags) or created?
