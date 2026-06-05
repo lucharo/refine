@@ -125,7 +125,7 @@ The ideal future: everyone starts from base skills that get better for their per
 For now, if an external skill needs improving: contribute upstream or fork.
 Note: `~/.refined/` is itself a valid source for `npx skills add ~/.refined` — so refined skills can be shared with other agents or users.
 ## Step 5: Link, track, and commit
-For each new or modified skill, ask the user whether to git track it (default: yes for user skills, no for local/repo skills).
+**Git-track user skills by default — don't ask.** User skills (written to `~/.refined/`) are git-tracked as a firm convention: stage and commit them without surfacing it as a choice. Repo/local skills default to NOT tracked separately (they live in the project's own git). Only ask about tracking when the user has signalled a reason to deviate. When you do need a scope question (Step 4, user vs repo), don't bundle a redundant "git or not" option alongside it — the git default follows from the scope.
 **User skills** (written to `~/.refined/`):
 ```bash
 # Claude-style discovery
