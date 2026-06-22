@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.5.2
+
+- Document pointing `~/.refined` elsewhere: clone your own skills repo into it, or symlink it to a visible location like `~/skills`. No config — refine always writes to `~/.refined`, and the remote/location follow from what's there.
+
 ## 0.5.1
 
 - Add Codex-aware discovery guidance: inspect `~/.agents/skills` and repo `.agents/skills`, not

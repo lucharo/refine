@@ -22,6 +22,21 @@ Skills aren't just for using particular CLIs or Python packages. They hold prefe
 - `.claude/skills/` — project-level skills, committed in the project repo
 - When creating a new skill, it asks which scope
 
+### Pointing `~/.refined` somewhere else
+
+`~/.refined` is the one path refine writes user skills to — and it's just a folder that happens to be a git repo, so standard tools bend it to whatever you want. No config:
+
+- **Back it with your own repo** — clone into place:
+  ```bash
+  git clone git@github.com:you/skills.git ~/.refined
+  ```
+- **Keep skills somewhere visible** (e.g. `~/skills`) — symlink it:
+  ```bash
+  ln -sfn ~/skills ~/.refined
+  ```
+
+Either way refine writes to `~/.refined`; the remote and location follow from what's there.
+
 ## Install
 
 ### npx skills
