@@ -2,7 +2,7 @@
 
 ## 0.5.2
 
-- Document pointing `~/.refined` elsewhere: clone your own skills repo into it, or symlink it to a visible location like `~/skills`. No config — refine always writes to `~/.refined`, and the remote/location follow from what's there.
+- Document pointing `~/.refined` elsewhere — back it with your own repo (clone when fresh, or add a remote + push if it already exists) or symlink it to a visible location like `~/skills` (moving any existing dir first). No config — refine always writes to `~/.refined`, and the remote/location follow from what's there.
 
 ## 0.5.1
 

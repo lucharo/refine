@@ -24,18 +24,31 @@ Skills aren't just for using particular CLIs or Python packages. They hold prefe
 
 ### Pointing `~/.refined` somewhere else
 
-`~/.refined` is the one path refine writes user skills to — and it's just a folder that happens to be a git repo, so standard tools bend it to whatever you want. No config:
+`~/.refined` is the one path refine writes user skills to — and it's just a folder that happens to be a git repo, so standard tools bend it to whatever you want. No config; refine always writes to `~/.refined`, and the remote and location follow from what's there.
 
-- **Back it with your own repo** — clone into place:
+**Back it with your own repo**
+
+- No `~/.refined` yet — clone into place:
   ```bash
   git clone git@github.com:you/skills.git ~/.refined
   ```
-- **Keep skills somewhere visible** (e.g. `~/skills`) — symlink it:
+- Already have `~/.refined`? It's already a git repo — just add your remote and push:
+  ```bash
+  git -C ~/.refined remote add origin git@github.com:you/skills.git
+  git -C ~/.refined push -u origin main
+  ```
+
+**Keep skills somewhere visible** (e.g. `~/skills`)
+
+- No `~/.refined` yet — symlink it (with `~/skills` already in place):
   ```bash
   ln -sfn ~/skills ~/.refined
   ```
-
-Either way refine writes to `~/.refined`; the remote and location follow from what's there.
+- Already have `~/.refined`? Move it to the new location first, then symlink — otherwise `ln` drops the link *inside* the existing dir:
+  ```bash
+  mv ~/.refined ~/skills
+  ln -sfn ~/skills ~/.refined
+  ```
 
 ## Install
 
