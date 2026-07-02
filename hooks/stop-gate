@@ -19,7 +19,7 @@ fi
 # Check if the gate is enabled for this project (state is per-project,
 # keyed by workspace dir — must match hooks/setup and hooks/track-refine)
 PROJECT_DIR="${CLAUDE_PROJECT_DIR:-$PWD}"
-PROJECT_KEY=$(printf '%s' "$PROJECT_DIR" | tr -c 'a-zA-Z0-9' '-')
+PROJECT_KEY="$(printf '%s' "$(basename "$PROJECT_DIR")" | tr -c 'a-zA-Z0-9' '-')-$(printf '%s' "$PROJECT_DIR" | cksum | cut -d' ' -f1)"
 DATA_DIR="$HOME/.claude/refine-gate/$PROJECT_KEY"
 CONFIG_FILE="$DATA_DIR/config.json"
 if [ ! -f "$CONFIG_FILE" ]; then

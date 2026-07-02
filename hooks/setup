@@ -10,7 +10,9 @@
 # Per-project state, derived from the workspace — works from hooks and from
 # the /refine:setup command alike (no hook-only env like CLAUDE_PLUGIN_DATA needed).
 PROJECT_DIR="${CLAUDE_PROJECT_DIR:-$PWD}"
-PROJECT_KEY=$(printf '%s' "$PROJECT_DIR" | tr -c 'a-zA-Z0-9' '-')
+# Key = readable basename + checksum of the full path (collision-resistant:
+# sanitizing alone would map e.g. /a/b-c and /a/b/c to the same key)
+PROJECT_KEY="$(printf '%s' "$(basename "$PROJECT_DIR")" | tr -c 'a-zA-Z0-9' '-')-$(printf '%s' "$PROJECT_DIR" | cksum | cut -d' ' -f1)"
 DATA_DIR="$HOME/.claude/refine-gate/$PROJECT_KEY"
 CONFIG_FILE="$DATA_DIR/config.json"
 

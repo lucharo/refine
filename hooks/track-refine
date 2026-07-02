@@ -19,7 +19,7 @@ SAFE_ID=$(echo "$SESSION_ID" | tr '/' '_')
 
 # Per-project state — must match hooks/setup and hooks/stop-gate
 PROJECT_DIR="${CLAUDE_PROJECT_DIR:-$PWD}"
-PROJECT_KEY=$(printf '%s' "$PROJECT_DIR" | tr -c 'a-zA-Z0-9' '-')
+PROJECT_KEY="$(printf '%s' "$(basename "$PROJECT_DIR")" | tr -c 'a-zA-Z0-9' '-')-$(printf '%s' "$PROJECT_DIR" | cksum | cut -d' ' -f1)"
 DATA_DIR="$HOME/.claude/refine-gate/$PROJECT_KEY"
 
 SESSIONS_DIR="${DATA_DIR}/sessions"

@@ -29,8 +29,11 @@ if %ERRORLEVEL% equ 0 (
 exit /b 0
 CMDBLOCK
 
-# Unix: run the named script via explicit bash
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" && pwd)"
+# Unix: run the named script via explicit bash.
+# POSIX-safe on purpose — this file has no shebang, so hook runners that fall
+# back to /bin/sh (e.g. dash) interpret it directly; bash-only syntax like
+# ${BASH_SOURCE[0]} would break there.
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 SCRIPT_NAME="$1"
 shift
 exec bash "${SCRIPT_DIR}/${SCRIPT_NAME}" "$@"
