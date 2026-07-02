@@ -73,12 +73,12 @@ After evaluating skills and CLAUDE.md, ask three questions:
 - **Prefer skills over CLAUDE.md** for anything that's a multi-step workflow. CLAUDE.md is for preferences and rules; skills are for procedures.
 - If the user corrected agent behavior in this session, do not stop at a vague recommendation. Draft the exact 1-3 line CLAUDE.md addition or update you would make, and present that concrete snippet when asking for confirmation.
 - If the correction is about repo-state handling (for example, "pull latest" in a dirty repo), separate the general rule from the one-off repo facts: capture the behavior rule in CLAUDE.md, not the repo's specific state.
-- A single correction often contains BOTH a fact and a rule. Capture the fact where facts go (docs/memory), AND extract the behavioral rule for CLAUDE.md. Example: "X and Y are completely different things" is a fact about X/Y plus a rule: "don't conflate unrelated concepts without evidence". Dropping one of the two is a failure mode.
+- A single correction often contains BOTH a fact and a rule. Extract the behavioral rule for CLAUDE.md yourself; for the fact half, do NOT edit docs or memory files (out of scope — see "Memory files are out of scope") — surface it to the user as a suggested docs/memory note instead. Example: "X and Y are completely different things" is a fact about X/Y plus a rule: "don't conflate unrelated concepts without evidence". Dropping either half is a failure mode.
 **What does NOT go in CLAUDE.md or skills:**
 - Project-specific facts or implementation decisions ("we use h-dvh not h-screen", "auth uses Better Auth") — these are documentation or memory, not rules.
 - Change-log entries ("fixed X by switching to Y") — git history covers this.
 - Generic engineering advice ("investigate root causes") — too obvious to be a useful rule.
-The test: if it tells you WHAT to do in a situation, it's a rule (CLAUDE.md). If it tells you what IS, it's a fact (docs/memory). A single correction can contain BOTH — extract both. Routing only the fact to memory and declaring "nothing to refine" is a common failure when the user corrected visible behavior this session.
+The test: if it tells you WHAT to do in a situation, it's a rule (CLAUDE.md). If it tells you what IS, it's a fact (docs/memory). A single correction can contain BOTH — extract the rule and flag the fact for docs/memory as a follow-up. Routing only the fact to memory and declaring "nothing to refine" is a common failure when the user corrected visible behavior this session.
 Choose the right file:
 - **User CLAUDE.md** (`~/.claude/CLAUDE.md`): who the user is and how they work across all projects — tool preferences, communication style, secret handling, memory conventions
 - **Repo CLAUDE.md** (`CLAUDE.md` or `.claude/CLAUDE.md`): how this specific codebase works — stack, commands, validation, deploy, commit conventions
@@ -184,7 +184,7 @@ Some users have auto-memory systems (persistent file-based memory). Refine does 
 - **Skills** → reusable workflows and procedures
 - **CLAUDE.md** → behavioral rules and project conventions
 - **Memory files** → contextual facts, user profile, project state (managed by the memory system, not refine)
-If something looks like a fact to remember rather than a rule to follow or a workflow to codify, it's not refine's job.
+If something looks like a fact to remember rather than a rule to follow or a workflow to codify, it's not refine's job to write it — surface it as a suggested note for the user's docs/memory system instead of editing those files.
 ## Constraints
 - Max 2 skills touched per refine. Max 1 new skill per refine.
 - A skill should be under 200 lines. Longer means it's doing too much.
