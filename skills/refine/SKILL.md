@@ -100,11 +100,15 @@ Your default stance should be to create or improve something. Most sessions cont
 - **Local/repo skill** — specific to the current project. Write to the repo's skill location
   (`.claude/skills/<name>/SKILL.md` for Claude-style repos, `.agents/skills/<name>/SKILL.md` for
   Codex/shared repos).
-Before committing the name, check for clashes:
+Before committing the name, check for clashes across every location a skill with
+that name could already live (or that refine might write to):
 ```bash
-# Ensure no plugin or external skill already uses this name
+# Ensure no plugin already uses this name
 grep -q '"<name>' ~/.claude/plugins/installed_plugins.json 2>/dev/null && echo 'CLASH: plugin exists'
-ls ~/.agents/skills/<name> 2>/dev/null && echo 'CLASH: npx skill exists'
+# Ensure no existing skill uses this name in any discovery surface or source dir
+for d in ~/.refined ~/.claude/skills ~/.agents/skills .claude/skills .agents/skills; do
+  [ -e "$d/<name>" ] && echo "CLASH: $d/<name> exists"
+done
 ```
 If a clash is found, pick a more specific name (e.g. `personal-<name>`).
 ### CLAUDE.md
