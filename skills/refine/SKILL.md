@@ -43,7 +43,10 @@ Check ownership before editing:
 - Symlink → `~/.refined/`: yours to refine
 - Symlink → a plugin dir or managed install: read-only (updates would overwrite)
 - Regular file in `~/.claude/skills/` or `.claude/skills/`: yours to refine
-- Regular file in a repo `.agents/skills/`: repo-owned; edit it in that repo
+- Regular entry in a repo `.agents/skills/`: not automatically repo-owned — `npx skills`
+  installs can land there as regular files too. Treat it as repo-owned (editable in that repo)
+  only if the repo's git tracks it; if it's untracked or listed in a skills lock/manifest
+  (e.g. `skills-lock.json`), treat it as externally managed and don't edit it.
 - Entry in `~/.agents/skills/`: inspect the target first. Treat it as a discovery surface, not
   the source of truth. If it points to `~/.refined/`, edit the target in `~/.refined/`. If it
   points into a plugin cache or managed install, do not edit it.
@@ -87,7 +90,9 @@ Your default stance should be to create or improve something. Most sessions cont
 **Refining an existing skill**: first `ls -la` to check if it's a symlink.
 - Symlink to `~/.refined/` → edit the target file in `~/.refined/`
 - Symlink to a plugin dir or managed install → do NOT edit (read-only — managed externally)
-- Regular file in `~/.claude/skills/`, `.claude/skills/`, or repo `.agents/skills/` → edit in place
+- Regular file in `~/.claude/skills/` or `.claude/skills/` → edit in place
+- Regular entry in a repo `.agents/skills/` → edit in place only if the repo's git tracks it;
+  untracked or lock-file-listed entries are externally managed — don't edit
 - Entry in `~/.agents/skills/` → inspect the target first; if it points to `~/.refined/`, edit
   `~/.refined/`, not the discovery link
 - If the skill is effectively off-the-shelf but you want a personal variant, copy the whole skill
@@ -130,9 +135,12 @@ For now, if an external skill needs improving: contribute upstream or fork.
 Note: `~/.refined/` is itself a valid source for `npx skills add ~/.refined` — so refined skills can be shared with other agents or users.
 ## Step 5: Link, track, and commit
 **Git-track user skills by default — don't ask.** User skills (written to `~/.refined/`) are git-tracked as a firm convention: stage and commit them without surfacing it as a choice. Repo/local skills default to NOT tracked separately (they live in the project's own git). Only ask about tracking when the user has signalled a reason to deviate. When you do need a scope question (Step 4, user vs repo), don't bundle a redundant "git or not" option alongside it — the git default follows from the scope.
-**User skills** (written to `~/.refined/`):
+**User skills** (written to `~/.refined/`). Link only into the discovery surfaces the user
+actually uses (skip any that don't apply — e.g. skip `~/.claude/skills` for a Codex-only
+setup), and `mkdir -p` each parent directory before linking:
 ```bash
 # Claude-style discovery
+mkdir -p "$HOME/.claude/skills"
 ln -sfn "$HOME/.refined/<name>" "$HOME/.claude/skills/<name>"
 
 # Codex/shared user-level discovery
