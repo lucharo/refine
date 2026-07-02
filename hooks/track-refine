@@ -17,7 +17,12 @@ fi
 SESSION_ID=$(echo "$EVENT" | jq -r '.session_id // "unknown"')
 SAFE_ID=$(echo "$SESSION_ID" | tr '/' '_')
 
-SESSIONS_DIR="${CLAUDE_PLUGIN_DATA}/sessions"
+# Per-project state — must match hooks/setup and hooks/stop-gate
+PROJECT_DIR="${CLAUDE_PROJECT_DIR:-$PWD}"
+PROJECT_KEY=$(printf '%s' "$PROJECT_DIR" | tr -c 'a-zA-Z0-9' '-')
+DATA_DIR="$HOME/.claude/refine-gate/$PROJECT_KEY"
+
+SESSIONS_DIR="${DATA_DIR}/sessions"
 mkdir -p "$SESSIONS_DIR"
 touch "${SESSIONS_DIR}/${SAFE_ID}.refined"
 

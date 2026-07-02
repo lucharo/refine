@@ -7,14 +7,15 @@
 #   hooks/setup --json --enable-gate    # enable and print status
 #   hooks/setup --json --disable-gate   # disable and print status
 
-CONFIG_FILE="${CLAUDE_PLUGIN_DATA}/config.json"
+# Per-project state, derived from the workspace — works from hooks and from
+# the /refine:setup command alike (no hook-only env like CLAUDE_PLUGIN_DATA needed).
+PROJECT_DIR="${CLAUDE_PROJECT_DIR:-$PWD}"
+PROJECT_KEY=$(printf '%s' "$PROJECT_DIR" | tr -c 'a-zA-Z0-9' '-')
+DATA_DIR="$HOME/.claude/refine-gate/$PROJECT_KEY"
+CONFIG_FILE="$DATA_DIR/config.json"
 
 ensure_config() {
-  if [ -z "$CLAUDE_PLUGIN_DATA" ]; then
-    echo '{"error": "CLAUDE_PLUGIN_DATA not set — run from a Claude Code hook or set it manually"}' >&2
-    exit 1
-  fi
-  mkdir -p "$CLAUDE_PLUGIN_DATA"
+  mkdir -p "$DATA_DIR"
   if [ ! -f "$CONFIG_FILE" ]; then
     echo '{"refineGate": false}' > "$CONFIG_FILE"
   fi
@@ -48,10 +49,10 @@ ensure_config
 ACTIONS_TAKEN="[]"
 if [ "$ACTION" = "enable" ]; then
   set_gate true
-  ACTIONS_TAKEN=$(jq -n --arg dir "$CLAUDE_PLUGIN_DATA" '["Enabled the refine gate for " + $dir + "."]')
+  ACTIONS_TAKEN=$(jq -n --arg dir "$PROJECT_DIR" '["Enabled the refine gate for " + $dir + "."]')
 elif [ "$ACTION" = "disable" ]; then
   set_gate false
-  ACTIONS_TAKEN=$(jq -n --arg dir "$CLAUDE_PLUGIN_DATA" '["Disabled the refine gate for " + $dir + "."]')
+  ACTIONS_TAKEN=$(jq -n --arg dir "$PROJECT_DIR" '["Disabled the refine gate for " + $dir + "."]')
 fi
 
 GATE_ENABLED=$(read_gate)

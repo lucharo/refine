@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "${CLAUDE_PLUGIN_ROOT}/hooks/track-refine",
+            "command": "${CLAUDE_PLUGIN_ROOT}/hooks/run-hook.cmd track-refine",
             "timeout": 5
           }
         ]
@@ -17,7 +17,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "${CLAUDE_PLUGIN_ROOT}/hooks/stop-gate",
+            "command": "${CLAUDE_PLUGIN_ROOT}/hooks/run-hook.cmd stop-gate",
             "timeout": 10
           }
         ]
