@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.6.0
+
+- Remove the "max 2 skills touched / max 1 new skill per refine" cap. In practice rich sessions
+  justify touching more (user explicitly waived and then removed the cap). Replaced with
+  evidence-proportional guidance: scale the number of skills to what the session actually shows.
+
 ## 0.5.2
 
 - Document pointing `~/.refined` elsewhere — back it with your own repo (clone when fresh, or add a remote + push if it already exists) or symlink it to a visible location like `~/skills` (moving any existing dir first). No config — refine always writes to `~/.refined`, and the remote/location follow from what's there.

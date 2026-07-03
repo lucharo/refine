@@ -84,7 +84,6 @@ Choose the right file:
 - **Repo CLAUDE.md** (`CLAUDE.md` or `.claude/CLAUDE.md`): how this specific codebase works — stack, commands, validation, deploy, commit conventions
 If it would be useful in a different repo, it belongs in user CLAUDE.md. If it only makes sense for this project, it belongs in repo CLAUDE.md.
 Your default stance should be to create or improve something. Most sessions contain at least one workflow, preference, or piece of knowledge worth capturing. "Nothing to refine" is valid but should be rare — it means you genuinely found no reusable workflow, no skill to improve, and no CLAUDE.md update needed.
-**Constraints**: max 2 skills touched per refine, max 1 new skill per refine.
 ## Step 4: Edit
 ### Skills
 **Refining an existing skill**: first `ls -la` to check if it's a symlink.
@@ -186,7 +185,7 @@ Some users have auto-memory systems (persistent file-based memory). Refine does 
 - **Memory files** → contextual facts, user profile, project state (managed by the memory system, not refine)
 If something looks like a fact to remember rather than a rule to follow or a workflow to codify, it's not refine's job to write it — surface it as a suggested note for the user's docs/memory system instead of editing those files.
 ## Constraints
-- Max 2 skills touched per refine. Max 1 new skill per refine.
+- Scale the number of skills touched or created to the session's evidence — a rich session can justify several, a thin one none.
 - A skill should be under 200 lines. Longer means it's doing too much.
 - Prefer refining an existing skill over creating a new one.
 - Never edit externally managed skills (plugins, `npx skills` installs) — they get overwritten on update.
