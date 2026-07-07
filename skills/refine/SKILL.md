@@ -15,6 +15,19 @@ allowed-tools:
 ---
 # Refine
 Review this session. Identify patterns worth capturing as new skills, improvements to existing skills, or additions to CLAUDE.md.
+
+## Modes
+Two ways to run — same Step 1 scan, different ending:
+- **Default (identify + apply):** scan the session yourself, then make the changes (Steps 2-5).
+- **Report-only / delegated (identify, don't apply):** when the user says "refine but don't apply",
+  "what would you refine", "refine via sub-agent", or on a **long session where you want a thorough
+  sweep so no lesson is missed**, delegate the scan instead of doing it yourself. Run the
+  **retrospect** skill with the target *"skill / CLAUDE.md refinement opportunities"* — it uses
+  **self-session** to locate and shard the transcript across neutral reader sub-agents (one per
+  ~1500 lines), and returns refinement candidates. The sub-agents **only report; they do not edit.**
+  You then present the candidates to the user, or apply the approved ones via Steps 4-5. This is a
+  mode of refine, not a separate skill — Steps 1-5 below still define what a "refinement" is.
+
 ## Step 1: Scan the session
 Identify what happened:
 1. Which skills were invoked (look for `<command-name>` tags) or created?

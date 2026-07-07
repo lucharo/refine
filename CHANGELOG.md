@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.8.0
+
+- Reflection suite — three modular pieces so nothing gets missed in long sessions, all shipped with
+  refine:
+  - **self-session** skill — reliably find and size the current session's own transcript (via
+    `CLAUDE_CODE_SESSION_ID`), with a sharding rule of thumb. The base building block.
+  - **retrospect** skill — read your OWN session and look for things (dropped asks, decisions,
+    lessons, untracked follow-ups, contradictions), optionally targeted. Delegates the read to
+    neutral reader sub-agents (sharded for big sessions) and reports back. Report-only by default.
+  - **refine report-only / delegated mode** — refine can now identify refinements WITHOUT applying:
+    it runs retrospect targeted at refinement opportunities, sub-agents report candidates, you (or
+    the user) decide what to apply. A mode of refine, not a separate skill.
+
 ## 0.7.1
 
 - Category layout is now cleanly opt-in, keyed off one marker file: `~/.refined/skills/CATEGORIES.md`.
