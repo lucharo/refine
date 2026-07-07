@@ -98,14 +98,18 @@ Your default stance should be to create or improve something. Most sessions cont
   into `~/.refined/<name>/`, then replace the user discovery entry with a symlink to that refined
   copy. Keep a reversible backup of the previous discovery-surface directory when practical.
 **Creating a new skill**: ask the user which scope:
-- **User skill** — useful across all projects. Write to the user skill store `~/.refined/`.
-  - **If the store uses a category layout** (`~/.refined/skills/` exists): the skill must live in a
-    category. Read `~/.refined/skills/CATEGORIES.md` for the one-line definitions, **infer** the
-    best-fit category from what the skill does, and write to
-    `~/.refined/skills/<category>/<name>/SKILL.md`. Only when two categories fit equally and you
-    genuinely can't decide, ask the user (offer the closest 2-3). Never invent a new category or
-    drop the skill at the store root.
-  - **Otherwise** (flat store, no `skills/` dir): write to `~/.refined/<name>/SKILL.md`.
+- **User skill** — useful across all projects. Write to the user skill store `~/.refined/`. How the
+  store is organised is **opt-in**, detected by one marker file — a flat store is never silently
+  reorganised into categories:
+  - **Flat layout (the default)** — if `~/.refined/skills/CATEGORIES.md` does NOT exist, write to
+    `~/.refined/<name>/SKILL.md`. Plain list, no grouping. This is what most users get.
+  - **Category layout (opt-in)** — if `~/.refined/skills/CATEGORIES.md` exists, the store is grouped.
+    Read it for the one-line category definitions, **infer** the best-fit category from what the
+    skill does, and write to `~/.refined/skills/<category>/<name>/SKILL.md`. Only when two categories
+    fit equally and you genuinely can't decide, ask the user (offer the closest 2-3). If the file
+    exists but is empty, ask the user which category to use. Never drop the skill at the store root.
+  - To opt in, a user just creates `~/.refined/skills/CATEGORIES.md` listing their categories (one
+    per line, `- name — one-line definition`); refine reads it from then on.
 - **Local/repo skill** — specific to the current project. Write to the repo's skill location
   (`.claude/skills/<name>/SKILL.md` for Claude-style repos, `.agents/skills/<name>/SKILL.md` for
   Codex/shared repos).

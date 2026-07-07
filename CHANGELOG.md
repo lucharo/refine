@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.7.1
+
+- Category layout is now cleanly opt-in, keyed off one marker file: `~/.refined/skills/CATEGORIES.md`.
+  No marker → flat store (`~/.refined/<name>/`), the default — a flat store is never silently
+  reorganised. Marker present → grouped, infer the category (ask only when torn). Opting in is just
+  creating `CATEGORIES.md`. Fixes 0.7.0 keying off the `skills/` dir, which could surprise users who
+  don't want grouping.
+
 ## 0.7.0
 
 - Category-store aware. When the user skill store uses a category layout (`~/.refined/skills/`
