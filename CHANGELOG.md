@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.7.0
+
+- Category-store aware. When the user skill store uses a category layout (`~/.refined/skills/`
+  exists), a newly-created user skill is placed in the right category: refine reads
+  `~/.refined/skills/CATEGORIES.md`, infers the best-fit category from what the skill does, and
+  writes to `~/.refined/skills/<category>/<name>/` — asking only when two categories fit equally.
+  Falls back to the flat `~/.refined/<name>/` when there's no `skills/` dir. Clash check now scans
+  every category, and linking prefers the store's own relink tool (`skills-sync relink`) over
+  hand-rolled symlinks. Fixes new skills landing uncategorised at the store root.
+
 ## 0.6.0
 
 - Remove the "max 2 skills touched / max 1 new skill per refine" cap. In practice rich sessions

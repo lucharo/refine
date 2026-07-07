@@ -98,9 +98,14 @@ Your default stance should be to create or improve something. Most sessions cont
   into `~/.refined/<name>/`, then replace the user discovery entry with a symlink to that refined
   copy. Keep a reversible backup of the previous discovery-surface directory when practical.
 **Creating a new skill**: ask the user which scope:
-- **User skill** — useful across all projects. Write to `~/.refined/<name>/SKILL.md`, then symlink it
-  into each discovery surface the user actually uses (`~/.claude/skills/<name>` for Claude-style
-  setups, `~/.agents/skills/<name>` for Codex/shared user installs).
+- **User skill** — useful across all projects. Write to the user skill store `~/.refined/`.
+  - **If the store uses a category layout** (`~/.refined/skills/` exists): the skill must live in a
+    category. Read `~/.refined/skills/CATEGORIES.md` for the one-line definitions, **infer** the
+    best-fit category from what the skill does, and write to
+    `~/.refined/skills/<category>/<name>/SKILL.md`. Only when two categories fit equally and you
+    genuinely can't decide, ask the user (offer the closest 2-3). Never invent a new category or
+    drop the skill at the store root.
+  - **Otherwise** (flat store, no `skills/` dir): write to `~/.refined/<name>/SKILL.md`.
 - **Local/repo skill** — specific to the current project. Write to the repo's skill location
   (`.claude/skills/<name>/SKILL.md` for Claude-style repos, `.agents/skills/<name>/SKILL.md` for
   Codex/shared repos).
@@ -113,6 +118,8 @@ grep -q '"<name>' ~/.claude/plugins/installed_plugins.json 2>/dev/null && echo '
 for d in ~/.refined ~/.claude/skills ~/.agents/skills .claude/skills .agents/skills; do
   [ -e "$d/<name>" ] && echo "CLASH: $d/<name> exists"
 done
+# Category store: names must be unique across every category (they flatten into one hub)
+for d in ~/.refined/skills/*/; do [ -e "$d<name>" ] && echo "CLASH: $d<name> exists"; done
 ```
 If a clash is found, pick a more specific name (e.g. `personal-<name>`).
 ### CLAUDE.md
@@ -134,29 +141,27 @@ For now, if an external skill needs improving: contribute upstream or fork.
 Note: `~/.refined/` is itself a valid source for `npx skills add ~/.refined` — so refined skills can be shared with other agents or users.
 ## Step 5: Link, track, and commit
 **Git-track user skills by default — don't ask.** User skills (written to `~/.refined/`) are git-tracked as a firm convention: stage and commit them without surfacing it as a choice. Repo/local skills default to NOT tracked separately (they live in the project's own git). Only ask about tracking when the user has signalled a reason to deviate. When you do need a scope question (Step 4, user vs repo), don't bundle a redundant "git or not" option alongside it — the git default follows from the scope.
-**User skills** (written to `~/.refined/`). Link only into the discovery surfaces the user
-actually uses (skip any that don't apply — e.g. skip `~/.claude/skills` for a Codex-only
-setup), and `mkdir -p` each parent directory before linking:
+**User skills** (written to `~/.refined/`). `<store-path>` is the skill dir you wrote:
+`~/.refined/skills/<category>/<name>` for a category store, else `~/.refined/<name>`.
+
+**If the store ships a relink tool, use it** — it wires every discovery surface from the store in
+one step (categories included), so you don't hand-roll symlinks:
 ```bash
-# Claude-style discovery
-mkdir -p "$HOME/.claude/skills"
-ln -sfn "$HOME/.refined/<name>" "$HOME/.claude/skills/<name>"
-
-# Codex/shared user-level discovery
-mkdir -p "$HOME/.agents/skills"
-ln -sfn "$HOME/.refined/<name>" "$HOME/.agents/skills/<name>"
-
-# If replacing an existing off-the-shelf user skill, move the old discovery-surface directory
-# aside first so the refined copy disables the base one cleanly.
-# Example:
+[ -x "$HOME/.scripts/skills-sync" ] && "$HOME/.scripts/skills-sync" relink
+```
+Otherwise link by hand into the surfaces the user actually uses (skip any that don't apply —
+e.g. skip `~/.claude/skills` for a Codex-only setup), `mkdir -p` each parent first:
+```bash
+mkdir -p "$HOME/.claude/skills" "$HOME/.agents/skills"
+ln -sfn "<store-path>" "$HOME/.claude/skills/<name>"     # Claude-style discovery
+ln -sfn "<store-path>" "$HOME/.agents/skills/<name>"     # Codex/shared user-level discovery
+# Replacing an off-the-shelf user skill? Move the old discovery dir aside first:
 # mv "$HOME/.agents/skills/<name>" "$HOME/.agents/skills/<name>.base-YYYY-MM-DD"
-# ln -s "$HOME/.refined/<name>" "$HOME/.agents/skills/<name>"
-
-# Optional: if the user also wants repo-local/shared discovery, add a repo `.agents/skills`
-# entry separately. Don't confuse that with the user-level `~/.agents/skills` link above.
-
-# If git-tracked:
-git -C "$HOME/.refined" add <name>/ && git -C "$HOME/.refined" commit -m "refine: <what changed and why>"
+```
+Then track it (user skills are git-tracked by default — `<store-relpath>` is `skills/<category>/<name>`
+for a category store, else `<name>`):
+```bash
+git -C "$HOME/.refined" add "<store-relpath>/" && git -C "$HOME/.refined" commit -m "refine: <what changed and why>"
 ```
 **Local/repo skills** (written to the repo's skill directory):
 ```bash
