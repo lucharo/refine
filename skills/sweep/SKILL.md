@@ -1,5 +1,6 @@
 ---
 name: sweep
+depends: [self-session, retrospect, refine]
 description: >
   One-shot deep refine: sweep the WHOLE current session across neutral reader sub-agents and
   surface every refinement (new skills, skill improvements, CLAUDE.md additions), then apply the

@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.9.1
+
+- Declare `depends:` on `sweep` (self-session, retrospect, refine) and `retrospect` (self-session)
+  so the reflection suite's composition is visible to a skill dependency graph.
+
 ## 0.9.0
 
 - **`sweep`** skill (`/refine:sweep`) — the retrospect+refine combo in one trigger. Locates and

@@ -1,5 +1,6 @@
 ---
 name: retrospect
+depends: [self-session]
 description: >
   Read your OWN current session transcript and look for things — dropped or unfinished asks,
   decisions made, lessons, untracked follow-ups, contradictions. Use when the user says
