@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.9.0
+
+- **`sweep`** skill (`/refine:sweep`) — the retrospect+refine combo in one trigger. Locates and
+  shards the current session (self-session), fans out neutral reader sub-agents that each RUN the
+  refine criteria over their slice (skills run in sub-agents by default), merges the candidates, and
+  applies the ones you approve. `disable-model-invocation: true` — a deliberate user-triggered sweep,
+  since it spawns several sub-agents. Reuses self-session + retrospect + refine; no new logic.
+
 ## 0.8.0
 
 - Reflection suite — three modular pieces so nothing gets missed in long sessions, all shipped with
