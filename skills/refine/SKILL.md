@@ -123,6 +123,17 @@ Your default stance should be to create or improve something. Most sessions cont
     exists but is empty, ask the user which category to use. Never drop the skill at the store root.
   - To opt in, a user just creates `~/.refined/skills/CATEGORIES.md` listing their categories (one
     per line, `- name — one-line definition`); refine reads it from then on.
+  - **Confidentiality tier (only if a private overlay exists)** — if `~/.refined/skills/private/`
+    exists, resolve the skill's TIER before its category, and route:
+    - **public/shareable** → `~/.refined/skills/<cat>/<name>/` (the default for generic workflows);
+    - **employer-confidential** (names internal systems, endpoints, org tooling) →
+      `~/.refined/skills/private/gsk/<cat>/<name>/`;
+    - **personal-confidential** (private life, personal accounts/infra not for any public repo) →
+      `~/.refined/skills/private/personal/<cat>/<name>/`.
+    Profile dirs under `private/` are the user's confidentiality domains — pick the matching one,
+    never invent a new profile. Infer the tier from the skill's content; ask only when genuinely
+    torn. **Warn before placing employer content anywhere else** — a mis-tiered skill leaks to
+    machines (or repos) that shouldn't surface it. Each profile has its own `CATEGORIES.md`.
 - **Local/repo skill** — specific to the current project. Write to the repo's skill location
   (`.claude/skills/<name>/SKILL.md` for Claude-style repos, `.agents/skills/<name>/SKILL.md` for
   Codex/shared repos).

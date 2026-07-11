@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.10.0
+
+- Taxonomy-aware routing: when the store has a private overlay (`skills/private/<profile>/`),
+  refine resolves TIER before category — public → `skills/<cat>/`, employer-confidential →
+  `private/gsk/<cat>/`, personal-confidential → `private/personal/<cat>/`. Infers, asks only when
+  torn, and warns before placing employer content anywhere a non-work machine would surface it.
+
 ## 0.9.1
 
 - Declare `depends:` on `sweep` (self-session, retrospect, refine) and `retrospect` (self-session)
