@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.12.0
+
+- Routing fixes for 0.10.0's taxonomy-aware placement. Step B now names the layout marker's path
+  per root — public root reads `~/.refined/skills/CATEGORIES.md`, a private profile root reads
+  `<ROOT>/CATEGORIES.md` — so an opted-in category store is no longer mistaken for a flat one.
+- Clash scan extended across every category and private profile before a name is committed, since
+  they all flatten into one discovery hub and `ln -sfn` overwrites silently.
+- Relinking now moves an existing real directory aside on **every** discovery surface being
+  relinked (`~/.agents/skills` as well as `~/.claude/skills`), not just the Claude one.
+
 ## 0.11.0
 
 - Structure-aware CLAUDE.md edits. Refine no longer appends by default. It reads the target file's

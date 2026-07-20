@@ -8,6 +8,12 @@ description: >
   "audit my own session", "did I capture everything". Takes an optional target ("retrospect on
   the decisions we made"); with no target it runs a general sweep. Reports findings — it does not
   act on them unless asked.
+allowed-tools:
+  - Task
+  - Bash
+  - Read
+  - Grep
+  - Glob
 ---
 
 # retrospect — go through your own session and look for things
