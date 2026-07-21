@@ -1,7 +1,7 @@
 ---
 name: self-session
 description: >
-  Locate and size the CURRENT Claude Code session's own transcript so an agent can read
+  Locate and size the CURRENT Claude Code or Codex session transcript so an agent can read
   its own history. Use when you need to find "my session id", "this session's transcript",
   read/scan the current conversation, or decide how many sub-agents to shard a long session
   across. Building block for the retrospect skill and refine's report-only mode.
@@ -9,29 +9,30 @@ description: >
 
 # self-session — find and size your own transcript
 
-Claude Code writes every session to a JSONL transcript named `<session-id>.jsonl`. This skill is
-the reliable way for an agent to find *its own* current transcript and decide how to read it.
+Claude Code and Codex both write JSONL transcripts. This skill is the reliable way for an agent
+to find *its own* current transcript and decide how to read it.
 
 ## 1. Find the transcript (reliable)
 
-The harness sets `CLAUDE_CODE_SESSION_ID` in the environment, and the transcript filename is that
-id. Search all project dirs for the matching file — the name match is exact, so parallel sessions
-don't confuse it:
+Use the exact harness ID when available so parallel sessions cannot be confused:
 
 ```bash
 SID="${CLAUDE_CODE_SESSION_ID:-}"
 if [ -n "$SID" ]; then
   TRANSCRIPT="$(find "$HOME/.claude/projects" -name "$SID.jsonl" -print -quit 2>/dev/null)"
+elif [ -n "${CODEX_THREAD_ID:-}" ]; then
+  TRANSCRIPT="$(find "$HOME/.codex/sessions" -name "*${CODEX_THREAD_ID}.jsonl" -print -quit 2>/dev/null)"
 else
-  # Fallback only if the env var is missing: newest transcript by mtime. LESS reliable under
+  # Fallback only if both IDs are missing: newest transcript by mtime. LESS reliable under
   # parallel sessions — verify the tail matches the current task before trusting it.
-  TRANSCRIPT="$(ls -t "$HOME"/.claude/projects/*/*.jsonl 2>/dev/null | head -1)"
+  TRANSCRIPT="$(find "$HOME/.claude/projects" "$HOME/.codex/sessions" -name '*.jsonl' \
+    -type f -print 2>/dev/null | xargs ls -t 2>/dev/null | head -1)"
 fi
 echo "$TRANSCRIPT"
 ```
 
-The project dir is slugified from the session's *original* working directory (where it started),
-not the current cwd — so search all of `~/.claude/projects/`, don't guess the slug.
+Claude's project dir is slugified from the session's *original* working directory, not the current
+cwd. Codex stores dated rollout files under `~/.codex/sessions/`. Search the full roots; do not guess.
 
 ## 2. Size it, and decide sharding
 

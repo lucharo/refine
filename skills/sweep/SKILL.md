@@ -26,9 +26,9 @@ context-poisoned about your own session, so the reading is done by neutral sub-a
 
 It composes the existing pieces — nothing here is new logic:
 
-1. **Locate + size** — use the **self-session** skill to find this session's transcript (via
-   `CLAUDE_CODE_SESSION_ID`) and decide the reader count (one per ~1500 lines, capped ~6; a short
-   session → one reader). Assign each reader a contiguous line range covering the whole file.
+1. **Locate + size** — use the **self-session** skill to find this session's transcript from the
+   current harness ID and decide the reader count (one per ~1500 lines, capped ~6; a short session
+   → one reader). Assign each reader a contiguous line range covering the whole file.
 
 2. **Gist** — write a one-paragraph summary of what the session was about. Readers need it as
    context; hand it to each one.
@@ -46,6 +46,10 @@ It composes the existing pieces — nothing here is new logic:
 5. **Present + apply** — show the merged candidates to the user. Apply only the ones they approve,
    via `refine` Steps 4-5 (write/edit the skill or CLAUDE.md, commit per refine's conventions).
    Report-only until they choose.
+
+6. **Completion gate** — finish only after every shard returned, candidates were deduplicated
+   against live files, every approved edit was validated and committed, and the final report lists
+   commit IDs plus anything deliberately left unresolved.
 
 ## Notes
 
