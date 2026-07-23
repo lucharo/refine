@@ -40,6 +40,11 @@ It composes the existing pieces — nothing here is new logic:
    **never your own conclusions** (neutrality is the point). Each returns ranked candidates tagged
    `new-skill` / `skill-improvement` / `claude-md`, with evidence and a concrete suggested change.
 
+   Use the Codex App's native subagent tools for this fan-out. Never fall back to
+   `agent-sdk-manager`, ad-hoc CLI child sessions, or another external agent harness. If native
+   subagent tools are not exposed in the current turn, stop and tell the user that native
+   multi-agent support is disabled or unavailable, then retry in a fresh session after it is fixed.
+
 4. **Merge** — dedupe across overlapping shards, rank by value, and drop anything already captured
    (check the live skills / CLAUDE.md before proposing).
 
