@@ -5,6 +5,11 @@ description: >
   its own history. Use when you need to find "my session id", "this session's transcript",
   read/scan the current conversation, or decide how many sub-agents to shard a long session
   across. Building block for the retrospect skill and refine's report-only mode.
+allowed-tools:
+  - Bash
+  - Read
+  - Grep
+  - Glob
 ---
 
 # self-session — find and size your own transcript

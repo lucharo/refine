@@ -9,6 +9,7 @@ description: >
   retrospect+refine combo in a single trigger.
 disable-model-invocation: true
 allowed-tools:
+  - Task
   - Bash
   - Read
   - Edit
@@ -36,8 +37,10 @@ It composes the existing pieces — nothing here is new logic:
 3. **Fan out neutral readers** — spawn one sub-agent per shard (in parallel where possible). Each
    reader **runs the `refine` skill's Step-1 scan in report-only mode** over its range — skills run
    in sub-agents by default, so the reader loads `refine` itself and applies its definition of a
-   refinement; you don't restate the criteria. Give each reader the gist + its line range, and
-   **never your own conclusions** (neutrality is the point). Each returns ranked candidates tagged
+   refinement; you don't restate the criteria. Give each reader the gist, the **transcript path**
+   from self-session, and the exact command to read its slice —
+   `sed -n 'START,ENDp' "<transcript-path>"` — and **never your own conclusions** (neutrality is
+   the point). Each returns ranked candidates tagged
    `new-skill` / `skill-improvement` / `claude-md`, with evidence and a concrete suggested change.
 
    Use the Codex App's native subagent tools for this fan-out. Never fall back to

@@ -1,5 +1,6 @@
 ---
 name: refine
+depends: [retrospect, self-session]
 description: >
   Reflect on the current session and refine skills or CLAUDE.md based on patterns
   observed. Use when the user says "refine", "what did we learn", or at the end of
@@ -12,6 +13,7 @@ allowed-tools:
   - Glob
   - Bash
   - AskUserQuestion
+  - Task
 ---
 # Refine
 Review this session. Identify patterns worth capturing as new skills, improvements to existing skills, or additions to CLAUDE.md.
@@ -108,32 +110,47 @@ Your default stance should be to create or improve something. Most sessions cont
 - Entry in `~/.agents/skills/` → inspect the target first; if it points to `~/.refined/`, edit
   `~/.refined/`, not the discovery link
 - If the skill is effectively off-the-shelf but you want a personal variant, copy the whole skill
-  into `~/.refined/<name>/`, then replace the user discovery entry with a symlink to that refined
-  copy. Keep a reversible backup of the previous discovery-surface directory when practical.
+  into the store using the **same placement rules as a new user skill** below (resolve tier, then
+  the chosen root's flat-vs-category marker) — not unconditionally to `~/.refined/<name>/`. Then
+  replace the user discovery entry with a symlink to that refined copy. Keep a reversible backup of
+  the previous discovery-surface directory when practical.
 **Creating a new skill**: ask the user which scope:
-- **User skill** — useful across all projects. Write to the user skill store `~/.refined/`. How the
-  store is organised is **opt-in**, detected by one marker file — a flat store is never silently
-  reorganised into categories:
-  - **Flat layout (the default)** — if `~/.refined/skills/CATEGORIES.md` does NOT exist, write to
-    `~/.refined/<name>/SKILL.md`. Plain list, no grouping. This is what most users get.
-  - **Category layout (opt-in)** — if `~/.refined/skills/CATEGORIES.md` exists, the store is grouped.
-    Read it for the one-line category definitions, **infer** the best-fit category from what the
-    skill does, and write to `~/.refined/skills/<category>/<name>/SKILL.md`. Only when two categories
-    fit equally and you genuinely can't decide, ask the user (offer the closest 2-3). If the file
-    exists but is empty, ask the user which category to use. Never drop the skill at the store root.
-  - To opt in, a user just creates `~/.refined/skills/CATEGORIES.md` listing their categories (one
-    per line, `- name — one-line definition`); refine reads it from then on.
-  - **Confidentiality tier (only if a private overlay exists)** — if `~/.refined/skills/private/`
-    exists, resolve the skill's TIER before its category, and route:
-    - **public/shareable** → `~/.refined/skills/<cat>/<name>/` (the default for generic workflows);
-    - **employer-confidential** (names internal systems, endpoints, org tooling) →
-      `~/.refined/skills/private/gsk/<cat>/<name>/`;
-    - **personal-confidential** (private life, personal accounts/infra not for any public repo) →
-      `~/.refined/skills/private/personal/<cat>/<name>/`.
-    Profile dirs under `private/` are the user's confidentiality domains — pick the matching one,
-    never invent a new profile. Infer the tier from the skill's content; ask only when genuinely
-    torn. **Warn before placing employer content anywhere else** — a mis-tiered skill leaks to
-    machines (or repos) that shouldn't surface it. Each profile has its own `CATEGORIES.md`.
+- **User skill** — useful across all projects. Write to the user skill store `~/.refined/`.
+  Placement resolves in two **orthogonal** steps: pick the ROOT (confidentiality tier), then apply
+  that root's own layout marker. A flat store is never silently reorganised into categories.
+
+  **Step A — pick the ROOT (confidentiality tier).** Only applies if `~/.refined/skills/private/`
+  exists; otherwise ROOT is `~/.refined/`.
+  - **public/shareable** (generic workflows — the default) → ROOT is `~/.refined/`.
+  - **confidential** (names internal systems, endpoints, org tooling, or private life / personal
+    accounts and infra not for any public repo) → ROOT is
+    `~/.refined/skills/private/<profile>/`.
+
+  Discover the available profiles at runtime — `ls -d ~/.refined/skills/private/*/` — and pick the
+  one matching the skill's confidentiality domain (a user might have e.g. `work/` and `home/`, or
+  an employer-named dir). **Never invent a new profile.** Infer the tier from the skill's content;
+  when genuinely torn, ask. Before writing employer-confidential content to any root other than a
+  `private/` profile, **stop and ask the user to confirm** (AskUserQuestion) — do not just warn; a
+  mis-tiered skill leaks to machines (or repos) that shouldn't surface it.
+
+  **Step B — apply the ROOT's layout marker.** Each root carries its own `CATEGORIES.md`; read the
+  marker for the root chosen in Step A, never a different root's. **The marker path differs per
+  root** — stat the exact path below, not `<ROOT>/CATEGORIES.md` blindly:
+  - public root (`~/.refined`) → marker is `~/.refined/skills/CATEGORIES.md`
+  - private profile root (`~/.refined/skills/private/<profile>/`) → marker is
+    `<ROOT>/CATEGORIES.md`
+  - **Flat layout (the default)** — if that root's marker does not exist, write to
+    `<ROOT>/<name>/SKILL.md` (for the public root that is `~/.refined/<name>/SKILL.md`). Plain
+    list, no grouping. This is what most users get.
+  - **Category layout (opt-in)** — if the marker exists, the root is grouped. Read it for the
+    one-line category definitions, **infer** the best-fit category from what the skill does, and
+    write to `~/.refined/skills/<category>/<name>/SKILL.md` for the public root, or
+    `<ROOT>/<category>/<name>/SKILL.md` for a private profile root. Only when two categories fit
+    equally and you genuinely can't decide, ask the user (offer the closest 2-3). If the file
+    exists but is empty, ask the user which category to use. Never drop the skill at the root.
+  - To opt in, a user creates the marker at that root's path above (`~/.refined/skills/CATEGORIES.md`
+    for the public root) listing their categories (one per line, `- name — one-line definition`);
+    refine reads it from then on.
 - **Local/repo skill** — specific to the current project. Write to the repo's skill location
   (`.claude/skills/<name>/SKILL.md` for Claude-style repos, `.agents/skills/<name>/SKILL.md` for
   Codex/shared repos).
@@ -146,8 +163,14 @@ grep -q '"<name>' ~/.claude/plugins/installed_plugins.json 2>/dev/null && echo '
 for d in ~/.refined ~/.claude/skills ~/.agents/skills .claude/skills .agents/skills; do
   [ -e "$d/<name>" ] && echo "CLASH: $d/<name> exists"
 done
-# Category store: names must be unique across every category (they flatten into one hub)
-for d in ~/.refined/skills/*/; do [ -e "$d<name>" ] && echo "CLASH: $d<name> exists"; done
+# Category store (only when opted in): names must be unique across every category and every
+# private profile — they all flatten into one discovery hub, and `ln -sfn` overwrites silently.
+if [ -f "$HOME/.refined/skills/CATEGORIES.md" ]; then
+  for d in ~/.refined/skills/*/; do [ -e "$d<name>" ] && echo "CLASH: $d<name> exists"; done
+fi
+for d in ~/.refined/skills/private/*/ ~/.refined/skills/private/*/*/; do
+  [ -e "$d<name>" ] && echo "CLASH: $d<name> exists"
+done
 ```
 If a clash is found, pick a more specific name (e.g. `personal-<name>`).
 ### CLAUDE.md
@@ -175,8 +198,12 @@ For now, if an external skill needs improving: contribute upstream or fork.
 Note: `~/.refined/` is itself a valid source for `npx skills add ~/.refined` — so refined skills can be shared with other agents or users.
 ## Step 5: Link, track, and commit
 **Git-track user skills by default — don't ask.** User skills (written to `~/.refined/`) are git-tracked as a firm convention: stage and commit them without surfacing it as a choice. Repo/local skills default to NOT tracked separately (they live in the project's own git). Only ask about tracking when the user has signalled a reason to deviate. When you do need a scope question (Step 4, user vs repo), don't bundle a redundant "git or not" option alongside it — the git default follows from the scope.
-**User skills** (written to `~/.refined/`). `<store-path>` is the skill dir you wrote:
-`~/.refined/skills/<category>/<name>` for a category store, else `~/.refined/<name>`.
+**User skills** (written to `~/.refined/`). `<store-path>` is the skill dir you wrote — it has one
+shape per ROOT/layout combination from Step 4:
+- public root, flat → `~/.refined/<name>`
+- public root, category → `~/.refined/skills/<category>/<name>`
+- private profile root, flat → `~/.refined/skills/private/<profile>/<name>`
+- private profile root, category → `~/.refined/skills/private/<profile>/<category>/<name>`
 
 **If the store ships a relink tool, use it** — it wires every discovery surface from the store in
 one step (categories included), so you don't hand-roll symlinks:
@@ -185,18 +212,37 @@ one step (categories included), so you don't hand-roll symlinks:
 ```
 Otherwise link by hand into the surfaces the user actually uses (skip any that don't apply —
 e.g. skip `~/.claude/skills` for a Codex-only setup), `mkdir -p` each parent first:
+Replacing an off-the-shelf user skill? **Move the existing discovery directory aside BEFORE
+linking** — `ln -sfn` will not cleanly replace a real directory:
 ```bash
-mkdir -p "$HOME/.claude/skills" "$HOME/.agents/skills"
-ln -sfn "<store-path>" "$HOME/.claude/skills/<name>"     # Claude-style discovery
-ln -sfn "<store-path>" "$HOME/.agents/skills/<name>"     # Codex/shared user-level discovery
-# Replacing an off-the-shelf user skill? Move the old discovery dir aside first:
-# mv "$HOME/.agents/skills/<name>" "$HOME/.agents/skills/<name>.base-YYYY-MM-DD"
+# Per surface, only for the surfaces the user actually uses — every surface you relink,
+# not just the Claude one:
+for s in "$HOME/.claude/skills" "$HOME/.agents/skills"; do
+  [ -d "$s/<name>" ] && [ ! -L "$s/<name>" ] \
+    && mv "$s/<name>" "$s/<name>.base-YYYY-MM-DD"
+done
 ```
-Then track it (user skills are git-tracked by default — `<store-relpath>` is `skills/<category>/<name>`
-for a category store, else `<name>`):
+Then link, one command per surface — run only the ones that apply (skip `~/.claude/skills` for a
+Codex-only setup, skip `~/.agents/skills` for a Claude-only one):
 ```bash
+# Claude-style discovery
+mkdir -p "$HOME/.claude/skills" && ln -sfn "<store-path>" "$HOME/.claude/skills/<name>"
+# Codex/shared user-level discovery
+mkdir -p "$HOME/.agents/skills" && ln -sfn "<store-path>" "$HOME/.agents/skills/<name>"
+```
+Then track it (user skills are git-tracked by default). **Commit in the repo that OWNS the path** —
+a private profile dir is typically its own repo (or gitignored/nested inside the store), so never
+`git add` a `private/` path from the outer `~/.refined` repo:
+```bash
+# Public root — <store-relpath> is skills/<category>/<name> for a category store, else <name>
 git -C "$HOME/.refined" add "<store-relpath>/" && git -C "$HOME/.refined" commit -m "refine: <what changed and why>"
+# Private profile root — commit inside the profile repo; <profile-relpath> is
+# <category>/<name> if that profile has a CATEGORIES.md, else <name>
+git -C "$HOME/.refined/skills/private/<profile>" add "<profile-relpath>/" \
+  && git -C "$HOME/.refined/skills/private/<profile>" commit -m "refine: <what changed and why>"
 ```
+If the private profile dir is not itself a git repo, stop and ask the user how it should be tracked
+rather than falling back to the outer store repo.
 **Local/repo skills** (written to the repo's skill directory):
 ```bash
 # Commit in the project repo if the user wants
