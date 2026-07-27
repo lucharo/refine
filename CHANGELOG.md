@@ -1,5 +1,24 @@
 # Changelog
 
+## 0.11.0
+
+- Structure-aware CLAUDE.md edits. Refine no longer appends by default. It reads the target file's
+  own conventions first — a routing header, a declared size budget, a list reserved for one-line
+  gotchas — and follows them, placing each entry in the section that already covers its topic.
+  Rewrites a related entry rather than stacking a second beside it, and surfaces genuine conflicts
+  instead of keeping both.
+- Never appends at end-of-file. A file may close with an index or a deliberate final instruction
+  placed there so it lands last; appending past it displaces the thing it is positioned to be.
+- Generated-file guard. Checks whether CLAUDE.md is rendered by a dotfile manager before editing it
+  (`chezmoi source-path`), and edits the source instead. Previously every edit to a chezmoi-managed
+  CLAUDE.md was silently reverted at the next apply and could not be recaptured, because
+  `chezmoi re-add` skips `.tmpl` sources.
+- Honours a size budget. Counts before and after, and proposes a trim in the same pass when an
+  addition would push the file over a stated budget or past Claude Code's 40k-character warning.
+- Output is now counted — `added N, merged N, removed N` — so a purely additive run is visible as
+  one. Measured motivation: one CLAUDE.md accumulated 74 section headings and lost 2 across its
+  history, reaching twice the size at which the tool warns.
+
 ## 0.10.0
 
 - Taxonomy-aware routing: when the store has a private overlay (`skills/private/<profile>/`),
