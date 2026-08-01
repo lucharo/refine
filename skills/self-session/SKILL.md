@@ -19,7 +19,21 @@ to find *its own* current transcript and decide how to read it.
 
 ## 1. Find the transcript (reliable)
 
-Use the exact harness ID when available so parallel sessions cannot be confused:
+Use the exact harness ID when available so parallel sessions cannot be confused.
+
+If [`trawl`](https://github.com/lucharo/trawl) is installed, it already does this and is the
+better answer — it resolves a *thread*, so a session that was resumed or whose worktree moved
+still returns all of its transcript files rather than whichever fragment matched first:
+
+```bash
+trawl resolve                 # prints: id, agent, project, path
+```
+
+It **exits non-zero rather than guessing**: 3 = no session id in the environment, 4 = id valid
+but not yet indexed. That refusal is the point — under parallel sessions a confident wrong
+transcript is worse than a failure.
+
+Without `trawl`, resolve by ID directly:
 
 ```bash
 SID="${CLAUDE_CODE_SESSION_ID:-}"
@@ -40,6 +54,19 @@ Claude's project dir is slugified from the session's *original* working director
 cwd. Codex stores dated rollout files under `~/.codex/sessions/`. Search the full roots; do not guess.
 
 ## 2. Size it, and decide sharding
+
+With `trawl`, ask for the ranges instead of computing them — it prints one ready-to-run command
+per reader, already capped:
+
+```bash
+trawl shard <id>              # contiguous ranges + the digest command for each
+```
+
+Each printed command is a `trawl digest … --from-line N --to-line M`, which returns user turns
+plus truncated assistant text with harness scaffolding stripped, so a reader gets the
+conversation rather than raw JSONL.
+
+Without `trawl`:
 
 ```bash
 lines=$(wc -l < "$TRANSCRIPT"); bytes=$(wc -c < "$TRANSCRIPT")
