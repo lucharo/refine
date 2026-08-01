@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.13.0
+
+- `self-session` resolves and shards through [`trawl`](https://github.com/lucharo/trawl) when it
+  is installed. `trawl resolve` returns a *thread*, so a session that was resumed or whose
+  worktree moved yields all of its transcript files rather than whichever one matched first, and
+  it exits non-zero instead of falling back to newest-by-mtime — the wrong answer whenever
+  several sessions run at once. `trawl shard` prints ready-to-run digest commands, so a reader
+  receives the conversation rather than raw JSONL.
+- `sweep`, `retrospect` and `faq-retrospect` inherit this without changing: all three delegate
+  transcript location to `self-session`, which is the only skill here that locates one.
+- The ID-based `find` and the manual line-count sharding rule remain as the path for machines
+  without trawl installed.
+
 ## 0.12.0
 
 - Routing fixes for 0.10.0's taxonomy-aware placement. Step B now names the layout marker's path
