@@ -57,6 +57,10 @@ Collect the readers' findings, dedupe across overlapping slices, rank by importa
 the user as a tight list: finding · where · why it matters. If the target was "dropped items",
 exclude things the user *deliberately* changed course on (note them as deliberate, not gaps).
 
+Before calling anything unfinished, reconcile it against later shards, the current artifacts, and
+live tracking state. An earlier slice's "pending" observation is a candidate to verify, not the
+session's final state.
+
 **Report-only by default.** Retrospect surfaces; it doesn't fix. Act on a finding only if the user
 asks — and if something should be tracked, create a task/issue rather than leaving it a loose
 thread.

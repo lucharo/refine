@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.13.1
+
+- `retrospect` now reconciles an earlier shard's "pending" or "unfinished" finding against later
+  shards, current artifacts, and live tracking before presenting it as the session's final state.
+
 ## 0.13.0
 
 - `self-session` resolves and shards through [`trawl`](https://github.com/lucharo/trawl) when it
