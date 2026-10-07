@@ -1,5 +1,10 @@
 # refine
 
+> **This is a finished base, meant to be forked and adapted.** It is no longer actively developed
+> and the repository is archived. Install it as is, or fork it and make it yours. Keep your own
+> taste out of the base: put personal preferences in a separate `<skill>-preferences` skill, so
+> the generic mechanics and your preferences can change independently.
+
 <p align="center">
   <img src="assets/refine.png" alt="Skills get better through use — true for humans, true for agents" width="500">
 </p>
@@ -18,53 +23,36 @@ Skills aren't just for using particular CLIs or Python packages. They hold prefe
 
 ## Where skills live
 
-- `~/.refined/` — git repo for user-level refined skills, symlinked into `~/.claude/skills/`
-- `.claude/skills/` — project-level skills, committed in the project repo
-- When creating a new skill, it asks which scope
+- **The store**: user-level skills are written to one directory, `$SKILLS_DIR` if set, otherwise
+  `~/.skills`. Make it a git repo so every refinement is a commit. Skills are symlinked from there
+  into `~/.claude/skills/` and `~/.agents/skills/`.
+- `.claude/skills/` or `.agents/skills/`: project-level skills, committed in the project repo.
+- When creating a new skill, it asks which scope.
 
-### Pointing `~/.refined` somewhere else
+Optional store features:
 
-`~/.refined` is the one path refine writes user skills to — and it's just a folder that happens to be a git repo, so standard tools bend it to whatever you want. No config; refine always writes to `~/.refined`, and the remote and location follow from what's there.
-
-**Back it with your own repo**
-
-- No `~/.refined` yet — clone into place:
-  ```bash
-  git clone git@github.com:you/skills.git ~/.refined
-  ```
-- Already have `~/.refined`? It's already a git repo — just add your remote and push:
-  ```bash
-  git -C ~/.refined remote add origin git@github.com:you/skills.git
-  git -C ~/.refined push -u origin main
-  ```
-
-**Keep skills somewhere visible** (e.g. `~/skills`)
-
-- No `~/.refined` yet — symlink it (with `~/skills` already in place):
-  ```bash
-  ln -sfn ~/skills ~/.refined
-  ```
-- Already have `~/.refined`? Move it to the new location first, then symlink — otherwise `ln` drops the link *inside* the existing dir:
-  ```bash
-  mv ~/.refined ~/skills
-  ln -sfn ~/skills ~/.refined
-  ```
+- **Categories**: create `CATEGORIES.md` at the store root, one `- name: definition` per line, and
+  new skills go into `<category>/<name>/` instead of a flat list.
+- **Private tier**: profile directories under `$SKILLS_DIR/private/<profile>/` (each its own repo)
+  hold skills that must not be shared; refine asks before writing confidential content anywhere else.
 
 ## Install
-
-### npx skills
-
-Works with Claude Code, Cursor, Cline, Codex, Windsurf, and [40+ other agents](https://github.com/vercel-labs/skills):
-
-```bash
-npx skills add lucharo/refine
-```
 
 ### Claude Code plugin
 
 ```bash
 claude plugin marketplace add lucharo/refine
 claude plugin install refine@refine
+```
+
+or, inside Claude Code, `/plugin marketplace add lucharo/refine` then `/plugin install refine@refine`.
+
+### npx skills
+
+Works with Claude Code, Cursor, Cline, Codex, Windsurf, and [40+ other agents](https://github.com/vercel-labs/skills):
+
+```bash
+npx skills add lucharo/refine -g
 ```
 
 Run anytime throughout the conversation — this might often be towards the end, before you leave the session.
@@ -74,7 +62,7 @@ Run anytime throughout the conversation — this might often be towards the end,
 Refined skills are standard SKILL.md files. They work with:
 - Claude Code (via `~/.claude/skills/` symlinks)
 - Any agent that reads SKILL.md (Cursor, Cline, etc. via `.agents/skills/`)
-- `npx skills add ~/.refined` (vercel-labs/skills CLI)
+- `npx skills add "$SKILLS_DIR"` (vercel-labs/skills CLI)
 
 ## Limitations
 
