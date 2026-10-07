@@ -1,17 +1,5 @@
 # Changelog
 
-## 1.0.0
-
-Generic base: the original author's paths and machine setup are removed, and the repo is archived as a finished starting point.
-
-- The skill store is `$SKILLS_DIR`, defaulting to `~/.skills`, in place of a fixed path. The
-  category marker is `<root>/CATEGORIES.md` for every root, and the optional private tier is
-  `$SKILLS_DIR/private/<profile>/`.
-- `self-session` no longer depends on an external transcript indexer; it resolves by harness
-  session ID. `sweep` asks for the harness's native subagent tool instead of a specific app.
-- README says the repo is a finished base to fork, and suggests keeping personal taste in a
-  separate `<skill>-preferences` skill.
-
 ## 0.13.1
 
 - `retrospect` now reconciles an earlier shard's "pending" or "unfinished" finding against later
