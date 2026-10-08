@@ -11,6 +11,7 @@ Generic base: the original author's paths and machine setup are removed, and the
   session ID. `sweep` asks for the harness's native subagent tool instead of a specific app.
 - README says the repo is a finished base to fork, and suggests keeping personal taste in a
   separate `<skill>-preferences` skill.
+- The hook commands quote `${CLAUDE_PLUGIN_ROOT}`, so a plugin path containing a space still runs.
 
 ## 0.13.1
 
