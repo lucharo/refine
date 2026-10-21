@@ -1,9 +1,7 @@
 # refine
 
-> **This is a finished base, meant to be forked and adapted.** It is no longer actively developed
-> and the repository is archived. Install it as is, or fork it and make it yours. Keep your own
-> taste out of the base: put personal preferences in a separate `<skill>-preferences` skill, so
-> the generic mechanics and your preferences can change independently.
+> [!WARNING]
+> **This repo is archived.** I don't develop refine here any more: my own copy lives in my skills repo and keeps changing with my setup. Use this version as is, or fork it and make it yours. If you want your own taste in it, put that in a separate `<skill>-preferences` skill rather than editing refine, so the two can change separately.
 
 <p align="center">
   <img src="assets/refine.png" alt="Skills get better through use — true for humans, true for agents" width="500">
@@ -23,18 +21,30 @@ Skills aren't just for using particular CLIs or Python packages. They hold prefe
 
 ## Where skills live
 
-- **The store**: user-level skills are written to one directory, `$SKILLS_DIR` if set, otherwise
-  `~/.skills`. Make it a git repo so every refinement is a commit. Skills are symlinked from there
-  into `~/.claude/skills/` and `~/.agents/skills/`.
-- `.claude/skills/` or `.agents/skills/`: project-level skills, committed in the project repo.
-- When creating a new skill, it asks which scope.
+- `~/.skills/` — git repo for user-level refined skills, symlinked into `~/.claude/skills/` and `~/.agents/skills/`
+- `.claude/skills/` or `.agents/skills/` — project-level skills, committed in the project repo
+- When creating a new skill, it asks which scope
 
-Optional store features:
+### Pointing the store somewhere else
 
-- **Categories**: create `CATEGORIES.md` at the store root, one `- name: definition` per line, and
-  new skills go into `<category>/<name>/` instead of a flat list.
-- **Private tier**: profile directories under `$SKILLS_DIR/private/<profile>/` (each its own repo)
-  hold skills that must not be shared; refine asks before writing confidential content anywhere else.
+`~/.skills` is the one path refine writes user skills to — and it's just a folder that happens to be a git repo, so standard tools bend it to whatever you want. Set `SKILLS_DIR` to use another folder.
+
+**Back it with your own repo**
+
+- No store yet — clone into place:
+  ```bash
+  git clone git@github.com:you/skills.git ~/.skills
+  ```
+- Already have one? It's already a git repo — just add your remote and push:
+  ```bash
+  git -C ~/.skills remote add origin git@github.com:you/skills.git
+  git -C ~/.skills push -u origin main
+  ```
+
+**Categories and private skills (optional)**
+
+- Add a `CATEGORIES.md` at the store root, one `- name: definition` per line, and new skills go into `<category>/<name>/` instead of one flat list
+- Skills that must never be shared go under `$SKILLS_DIR/private/<profile>/`, each its own repo; refine asks before writing anything confidential anywhere else
 
 ## Install
 
