@@ -27,7 +27,8 @@ STORE="${SKILLS_DIR:-$HOME/.skills}"
 
 Set `SKILLS_DIR` to use another location; otherwise the default is `~/.skills`. Skills are written
 to the store and symlinked into the discovery surfaces the agent reads (`~/.claude/skills`,
-`~/.agents/skills`). Every `$STORE` below means this path.
+`~/.agents/skills`). Every `$STORE` below means this path. Shell state does not persist between
+separate tool calls, so put the `STORE=` line at the top of every shell block below that uses it.
 
 ## Modes
 Two ways to run — same Step 1 scan, different ending:

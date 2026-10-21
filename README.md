@@ -62,7 +62,7 @@ Run anytime throughout the conversation — this might often be towards the end,
 Refined skills are standard SKILL.md files. They work with:
 - Claude Code (via `~/.claude/skills/` symlinks)
 - Any agent that reads SKILL.md (Cursor, Cline, etc. via `.agents/skills/`)
-- `npx skills add "$SKILLS_DIR"` (vercel-labs/skills CLI)
+- `npx skills add "${SKILLS_DIR:-$HOME/.skills}"` (vercel-labs/skills CLI)
 
 ## Limitations
 
