@@ -1,7 +1,7 @@
 # refine
 
 > [!WARNING]
-> **This repo is archived.** I don't develop refine here any more: my own copy lives in my skills repo and keeps changing with my setup. Use this version as is, or fork it and make it yours. If you want your own taste in it, put that in a separate `<skill>-preferences` skill rather than editing refine, so the two can change separately.
+> **This repo is no longer maintained.** As I refined `/refine` itself via `/meta-refine`, this tool became more and more coupled with my own preferences and personal setup. My copy now lives in my private skills repo. `/refine` and its sibling skills are key to my agentic development, every single session finishes with it (as part of a wider `/wrapup` workflow) which means my skills, system prompts, memories, etc stay up to date across sessions and "continually improve". Because of this I've wanted to make to archive the repo and make the latest version "general" so that anyone that comes across can set it up and refine it to their own needs from there on! As a nice pattern I've found separating skill "mechanics" from preferences can be useful, especially for sharing with others. You could have `/refine` & `/refine-preferences` so the two can change separately! Enjoy 💫
 
 <p align="center">
   <img src="assets/refine.png" alt="Skills get better through use — true for humans, true for agents" width="500">
