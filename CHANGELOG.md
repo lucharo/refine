@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.1
+
+- README: the archived notice is a yellow warning box, and the store section is back in the original wording, with the clone and remote steps restored for `~/.skills`.
+
 ## 1.0.0
 
 Generic base: the original author's paths and machine setup are removed, and the repo is archived as a finished starting point.
